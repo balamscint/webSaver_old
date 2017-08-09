@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">webSaver</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="about">Url or Web Page to PDF Converter</string>
+    <string name="contact">\nfeedback @ balamscint@gmail.com"</string>
+    <string name="no_internet">Check Your Internet Connection!!!</string>
+    <string name="error">Something Went Wrong. Try Again Later!!!</string>
+    <string name="no_mount">Mount Your SD Card!!!</string>
+    <string name="file_name">File Name :</string>
+    <string name="text_only">getString(R.string.no_internet)</string>
+
+    <!--Google Strings-->
+    <!--<string name="google_app_id">889239071779</string>-->
+
+</resources>
