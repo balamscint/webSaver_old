@@ -1,7 +1,5 @@
 package com.wpdf.websaver;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,7 +9,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,15 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.pdfcrowd.Client;
 import com.pdfcrowd.PdfcrowdError;
 import com.wpdf.adapter.ViewListAdapter;
 import com.wpdf.application.Config;
-import com.wpdf.application.WebSaverApplication;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.libs.ConnectionDetector;
 import com.wpdf.model.ViewModel;
@@ -56,12 +52,13 @@ public class PDFActivity extends Activity {
     private static List<ViewModel> list = new ArrayList<>();
     private EditText urlEditText;
     private ProgressDialog mProgress = null;
-    private Tracker mTracker;
     private ConnectionDetector cd;
     private String urlMake, gmail, uuid;
     private FirebaseAuth mAuth;
     private Dbcon db = null;
     private ListView listView;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +68,18 @@ public class PDFActivity extends Activity {
         setContentView(R.layout.activity_pdf);
 
         Fabric.with(this, new Crashlytics());
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         mAuth = FirebaseAuth.getInstance();
         cd = new ConnectionDetector(getApplicationContext());
         mProgress = new ProgressDialog(this);
+
+        //
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        //
 
         urlEditText = findViewById(R.id.editText1);
         listView = findViewById(R.id.listFiles);
@@ -85,53 +91,6 @@ public class PDFActivity extends Activity {
 
         db = new Dbcon(this);
 
-        WebSaverApplication application = (WebSaverApplication) getApplication();
-        mTracker = application.getDefaultTracker();
-
-        mTracker.setScreenName("HomeScreen");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Action")
-                .setAction("Loaded")
-                .build());
-        //
-
-        TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        //uuid = tManager.getDeviceId();
-
-        AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
-
-        Account[] list = manager.getAccounts();
-
-        for (Account account : list) {
-            if (account.type.equalsIgnoreCase("com.google")) {
-                gmail = account.name;
-                break;
-            }
-        }
-
-        Cursor dataCursor = null;
-
-        try {
-
-            String a[] = new String[]{"uuid", "account"};
-
-            dataCursor = db.fetch("sys", a, null, null, "sysId DESC");
-
-            if (dataCursor.getCount() <= 0) {
-                String fieldValues[] = new String[]{uuid, gmail};
-
-                if (gmail != null) {
-                    db.insert(fieldValues, a, "sys");
-                }
-            }
-
-            dataCursor.close();
-        } catch (Exception e) {
-            if (dataCursor != null && !dataCursor.isClosed())
-                dataCursor.close();
-        }
 
         TextView.OnEditorActionListener exampleListener = new TextView.OnEditorActionListener() {
             @Override
@@ -190,11 +149,6 @@ public class PDFActivity extends Activity {
                                 getString(R.string.contact);
 
                         toast(1, 1, strMess);
-
-                        mTracker.send(new HitBuilders.EventBuilder()
-                                .setCategory("Action")
-                                .setAction("About")
-                                .build());
                     }
                 });
 
@@ -264,19 +218,19 @@ public class PDFActivity extends Activity {
                                 Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(urlEditText.getWindowToken(), 0);
 
-
                         mProgress.setMessage("Saving...");
                         mProgress.show();
                         mProgress.setCancelable(false);
 
-                        mTracker.send(new HitBuilders.EventBuilder()
-                                .setCategory("Action")
-                                .setAction("PDF Created")
-                                .build());
+                        Bundle params = new Bundle();
+                        params.putString("EVENT", "PDF Requested");
+                        mFirebaseAnalytics.logEvent("CREATE", params);
 
-                        DownloadPDF downloadPDF = new DownloadPDF();
+                        mProgress.dismiss();
 
-                        downloadPDF.execute();
+                        // DownloadPDF downloadPDF = new DownloadPDF();
+
+                        //downloadPDF.execute();
                     } else {
                         Toast.makeText(PDFActivity.this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                     }

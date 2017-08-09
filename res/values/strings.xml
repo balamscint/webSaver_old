@@ -12,6 +12,10 @@
     <string name="file_name">File Name :</string>
     <string name="text_only">getString(R.string.no_internet)</string>
 
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
     <!--Google Strings-->
     <!--<string name="google_app_id">889239071779</string>-->
 
