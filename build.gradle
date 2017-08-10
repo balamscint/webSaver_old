@@ -29,13 +29,14 @@ dependencies {
         transitive = true
     }
     implementation 'com.ayz4sci.androidfactory:permissionhelper:1.0.0'
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.3@aar'
 }
 
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.1'
-    useLibrary 'org.apache.http.legacy'
-
+    //useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 14

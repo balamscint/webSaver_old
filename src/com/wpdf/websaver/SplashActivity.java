@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ayz4sci.androidfactory.permissionhelper.PermissionHelper;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -23,20 +25,24 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.wpdf.dbConfig.Dbcon;
+import com.wpdf.libs.Utils;
 
 import pl.tajchert.nammu.PermissionCallback;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class SplashActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class SplashActivity extends AppCompatActivity implements
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
 
     private static final int RC_SIGN_IN = 1001;
     private static final String TAG = "SplashActivity";
-    private static GoogleApiClient mGoogleApiClient;
+    private static GoogleApiClient mGoogleApiClient = null;
     private static boolean isAuthenticated = true;
     private static String strAccount;
     private Dbcon db = null;
@@ -44,6 +50,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private TextView textViewUserName;
     private PermissionHelper permissionHelper;
     private Handler mHandler = new Handler();
+    private FirebaseAuth mAuth;
 
     private Runnable mGoToApp = new Runnable() {
         public void run() {
@@ -68,54 +75,16 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         permissionHelper = PermissionHelper.getInstance(this);
 
-        Cursor dataCursor = null;
-
-        try {
-
-            String a[] = new String[]{"uuid", "account"};
-
-            dataCursor = db.fetch("sys", a, null, null, "sysId DESC");
-
-            if (dataCursor.getCount() <= 0) {
-                isAuthenticated = false;
-            }
-
-            dataCursor.close();
-        } catch (Exception e) {
-            if (dataCursor != null && !dataCursor.isClosed())
-                dataCursor.close();
-        }
-
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-
-        if (!isAuthenticated) {
-            signIn();
-        } else {
-            goToApp();
-        }
-
-
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-        //mControlsView.setVisibility(View.GONE);
-
         textViewUserName = (TextView) findViewById(R.id.userName);
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
 
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -128,7 +97,12 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void goToApp() {
-        mHandler.postDelayed(mGoToApp, 1000);
+        YoYo.with(Techniques.DropOut)
+                .duration(800)
+                .repeat(1)
+                .playOn(findViewById(R.id.fullscreen_content));
+
+        mHandler.postDelayed(mGoToApp, 890);
     }
 
     @Override
@@ -161,7 +135,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 
             if (acct != null && acct.getDisplayName() != null) {
@@ -171,8 +144,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 textViewUserName.setVisibility(View.VISIBLE);
                 textViewUserName.setText(strAccount);
 
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    updateAccount();
+                if (ActivityCompat.checkSelfPermission(this,
+                        android.Manifest.permission.READ_PHONE_STATE) ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    firebaseAuthWithGoogle(acct);
                 } else {
                     checkPermission();
                 }
@@ -181,14 +156,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 finish();
             }
         } else {
-            // Signed out, show unauthenticated UI.
             finish();
         }
     }
 
     private void checkPermission() {
         permissionHelper.verifyPermission(
-                new String[]{"Need Phone State Access"},
+                new String[]{getString(R.string.phone_state_request)},
                 new String[]{android.Manifest.permission.READ_PHONE_STATE},
                 new PermissionCallback() {
                     @Override
@@ -209,9 +183,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
 
-            String uuid = "";
+            String uuid = "NULL";
             if (tManager != null) {
                 uuid = tManager.getDeviceId();
             }
@@ -234,6 +209,79 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.stopAutoManage(this);
+            mGoogleApiClient.disconnect();
+        }
+
         permissionHelper.finish();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Cursor dataCursor = null;
+
+        try {
+
+            String a[] = new String[]{"uuid", "account"};
+
+            dataCursor = db.fetch("sys", a, null, null, "sysId DESC");
+
+            if (dataCursor.getCount() <= 0) {
+                isAuthenticated = false;
+            }
+
+            dataCursor.close();
+        } catch (Exception e) {
+            if (dataCursor != null && !dataCursor.isClosed())
+                dataCursor.close();
+        }
+
+        if (!isAuthenticated) {
+
+            // Configure sign-in to request the user's ID, email address, and basic
+            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.firebase_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            if (mGoogleApiClient == null) {
+                // Build a GoogleApiClient with access to the Google Sign-In API and the
+                // options specified by gso.
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .enableAutoManage(this /* FragmentActivity */,
+                                this /* OnConnectionFailedListener */)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                        .build();
+            }
+
+            signIn();
+        } else {
+            goToApp();
+        }
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getIdToken());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            //FirebaseUser user = mAuth.getCurrentUser();
+                            updateAccount();
+                        } else {
+                            Utils.toast(1, 1, "Failed", SplashActivity.this);
+                        }
+                    }
+                });
+    }
+
 }

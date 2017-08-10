@@ -3,6 +3,7 @@
     <color name="colorPrimary">#8FC6EE</color>
     <color name="colorAccentDark">#6fb6c4</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorPrimaryDark">#6fb6c4</color>
 
     <color name="colorHeaderGradientStart">#8FC6EE</color>
     <color name="colorHeaderGradientEnd">#6fb6c4</color>

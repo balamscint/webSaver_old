@@ -6,10 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class Dbhelper extends SQLiteOpenHelper {
 
+    public static final String PDF_LIST = "pdf_list";
+    public static final String SYS = "sys";
     private static final String DATABASE_NAME = "websaver";
-
-    private static final int DATABASE_VERSION = 2;
-
+    private static final int DATABASE_VERSION = 3;
     private static final String TABLE_CREATE_PDF = "create table pdf_list " +
             "(pdfId integer primary key autoincrement,path text not null);";
 

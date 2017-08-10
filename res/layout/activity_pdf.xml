@@ -1,156 +1,90 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    android:fillViewport="false">
+    android:fillViewport="false"
+    android:orientation="vertical">
 
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:background="#000000"
-        android:gravity="bottom"
-        android:paddingBottom="5dp"
-        android:paddingLeft="50dp"
-        android:text="@string/app_name"
-        android:textColor="#ffffff"
-        android:textSize="28sp"
-        android:textStyle="bold" />
+        android:background="@color/black_overlay"
+        android:fillViewport="false"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1"
-        android:layout_marginLeft="25dp"
-        android:layout_marginTop="28dp"
-        android:text="URL"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/app_logo"
+            android:src="@drawable/icon" />
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView2"
-        android:layout_alignBottom="@+id/textView2"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="5dp"
-        android:layout_toRightOf="@+id/textView2"
-        android:ems="10"
-        android:hint="google.com"
-        android:imeActionId="100"
-        android:imeOptions="actionDone"
-        android:inputType="textUri" />
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="#000000"
+            android:gravity="bottom"
+            android:paddingBottom="5dp"
+            android:text="@string/app_name"
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/checkBox1"
-        android:layout_marginLeft="@dimen/margin_general"
-        android:layout_toEndOf="@+id/checkBox1"
-        android:layout_toRightOf="@+id/checkBox1"
-        android:background="@drawable/round"
-        android:gravity="center"
-        android:padding="6dp"
-        android:text="Create PDF"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textViewTips"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_toEndOf="@+id/button1"
-        android:layout_toRightOf="@+id/button1"
-        android:background="@drawable/round"
-        android:gravity="center"
-        android:text="X"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:fillViewport="false"
+        android:orientation="horizontal">
 
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/url_sample"
+            android:imeActionId="100"
+            android:imeOptions="actionDone"
+            android:inputType="textUri" />
 
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/editText1"
-        android:layout_marginTop="22dp"
-        android:checked="false"
-        android:text="Text only" />
+    </LinearLayout>
 
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="wS"
-        android:src="@drawable/icon" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_alignRight="@+id/editText1"
-        android:layout_below="@+id/button3" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView2"
-        android:layout_alignRight="@+id/textView"
-        android:background="#000000"
-        android:gravity="center"
-        android:padding="6dp"
-        android:text="About"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/textViewTips"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/button1"
-        android:layout_marginBottom="@dimen/margin_general"
-        android:layout_marginTop="@dimen/margin_general"
-        android:gravity="center"
-        android:padding="@dimen/padding_general"
-        android:text="* Text only is not supported in all sites" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round"
+            android:text="@string/create_button"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
 
     <ListView
         android:id="@+id/listFiles"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/textViewTips"
-        android:layout_marginBottom="@dimen/margin_general"
-        android:layout_marginLeft="@dimen/margin_general"
-        android:layout_marginRight="@dimen/margin_general"
+        android:layout_marginTop="16dp"
         android:gravity="center" />
 
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/textViewTips"
-        android:layout_marginBottom="@dimen/margin_general"
-        android:layout_marginLeft="@dimen/margin_general"
-        android:layout_marginRight="@dimen/margin_general"
-        android:gravity="center"
-        android:text="No Entries" />
-
-
-</RelativeLayout>
+</LinearLayout>
 
