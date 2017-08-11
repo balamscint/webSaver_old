@@ -1,18 +1,19 @@
 package com.wpdf.websaver;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ayz4sci.androidfactory.permissionhelper.PermissionHelper;
@@ -30,6 +31,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
@@ -44,21 +46,15 @@ public class SplashActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 1001;
     private static final String TAG = "SplashActivity";
     private static GoogleApiClient mGoogleApiClient = null;
-    private static boolean isAuthenticated = true;
+    private static boolean isAuthenticated;
     private static String strAccount;
     private Dbcon db = null;
     private SignInButton signInButton;
-    private TextView textViewUserName;
+    private Button buttonSkip;
+    private TextView textViewUserName, textViewAppName;
     private PermissionHelper permissionHelper;
-    private Handler mHandler = new Handler();
     private FirebaseAuth mAuth;
-
-    private Runnable mGoToApp = new Runnable() {
-        public void run() {
-            startActivity(new Intent(SplashActivity.this, PDFActivity.class));
-            finish();
-        }
-    };
+    private ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,20 +63,24 @@ public class SplashActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_splash);
 
         db = new Dbcon(this);
+        permissionHelper = PermissionHelper.getInstance(this);
+        mAuth = FirebaseAuth.getInstance();
+        mProgress = new ProgressDialog(SplashActivity.this);
 
         // Set the dimensions of the sign-in button.
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        textViewAppName = (TextView) findViewById(R.id.fullscreen_content);
+        textViewUserName = (TextView) findViewById(R.id.userName);
+        buttonSkip = (Button) findViewById(R.id.buttonSkip);
+
         if (signInButton != null) {
-            signInButton.setSize(SignInButton.SIZE_STANDARD);
+            findViewById(R.id.sign_in_button).setOnClickListener(this);
         }
 
-        permissionHelper = PermissionHelper.getInstance(this);
+        if (buttonSkip != null) {
+            findViewById(R.id.buttonSkip).setOnClickListener(this);
+        }
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-
-        textViewUserName = (TextView) findViewById(R.id.userName);
-
-        mAuth = FirebaseAuth.getInstance();
     }
 
 
@@ -92,18 +92,29 @@ public class SplashActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        showSignIn();
+    }
+
+    private void showSignIn() {
         if (signInButton != null) {
+            signInButton.setSize(SignInButton.SIZE_STANDARD);
             signInButton.setVisibility(View.VISIBLE);
         }
     }
 
     private void goToApp() {
-        YoYo.with(Techniques.DropOut)
-                .duration(800)
-                .repeat(1)
-                .playOn(findViewById(R.id.fullscreen_content));
 
-        mHandler.postDelayed(mGoToApp, 860);
+        YoYo.with(Techniques.FadeIn)
+                .duration(700)
+                .repeat(1)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        startActivity(new Intent(SplashActivity.this, PDFActivity.class));
+                        finish();
+                    }
+                })
+                .playOn(findViewById(R.id.fullscreen_content));
     }
 
     @Override
@@ -112,12 +123,55 @@ public class SplashActivity extends AppCompatActivity implements
             case R.id.sign_in_button:
                 signIn();
                 break;
+            case R.id.buttonSkip:
+                skip();
+                break;
+        }
+    }
+
+    private void skip() {
+        buttonSkip.setEnabled(false);
+        buttonSkip.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        String fieldValues[] = new String[]{"NULL", "NULL"};
+        String a[] = new String[]{"uuid", "account"};
+        long l = db.insert(fieldValues, a, "sys");
+        if (l > 0) {
+            goToApp();
+        } else {
+            Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
         }
     }
 
     private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        if (!Utils.isConnectingToInternet(this)) {
+            Utils.toast(1, 1, getString(R.string.no_internet), SplashActivity.this);
+        } else {
+            mProgress.setMessage(getString(R.string.please_wait));
+            mProgress.show();
+            mProgress.setCancelable(false);
+
+            // Configure sign-in to request the user's ID, email address, and basic
+            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.firebase_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            if (mGoogleApiClient == null) {
+                // Build a GoogleApiClient with access to the Google Sign-In API and the
+                // options specified by gso.
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .enableAutoManage(this /* FragmentActivity */,
+                                this /* OnConnectionFailedListener */)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                        .build();
+            }
+
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
     }
 
     @Override
@@ -134,46 +188,45 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+
+        if (mProgress != null && mProgress.isShowing()) {
+            mProgress.dismiss();
+        }
+
         if (result.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
 
             if (acct != null && acct.getDisplayName() != null) {
-
-                strAccount = acct.getDisplayName();
-                signInButton.setVisibility(View.GONE);
-                textViewUserName.setVisibility(View.VISIBLE);
-                textViewUserName.setText(strAccount);
 
                 if (ActivityCompat.checkSelfPermission(this,
                         android.Manifest.permission.READ_PHONE_STATE) ==
                         PackageManager.PERMISSION_GRANTED) {
                     firebaseAuthWithGoogle(acct);
                 } else {
-                    checkPermission();
+                    checkPermission(acct);
                 }
 
             } else {
-                finish();
+                Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
             }
         } else {
-            finish();
+            Utils.toast(1, 1, getString(R.string.google_sign_in), SplashActivity.this);
         }
     }
 
-    private void checkPermission() {
+    private void checkPermission(final GoogleSignInAccount account) {
         permissionHelper.verifyPermission(
                 new String[]{getString(R.string.phone_state_request)},
                 new String[]{android.Manifest.permission.READ_PHONE_STATE},
                 new PermissionCallback() {
                     @Override
                     public void permissionGranted() {
-                        updateAccount();
+                        firebaseAuthWithGoogle(account);
                     }
 
                     @Override
                     public void permissionRefused() {
-                        finish();
+                        Utils.toast(1, 1, getString(R.string.phone_state_declined), SplashActivity.this);
                     }
                 }
         );
@@ -196,13 +249,17 @@ public class SplashActivity extends AppCompatActivity implements
 
                 String fieldValues[] = new String[]{uuid, strAccount};
                 String a[] = new String[]{"uuid", "account"};
-                db.insert(fieldValues, a, "sys");
+                long l = db.insert(fieldValues, a, "sys");
 
-                goToApp();
+                if (l > 0) {
+                    goToApp();
+                } else {
+                    Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                finish();
+                Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
             }
         }
     }
@@ -221,8 +278,8 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         Cursor dataCursor = null;
 
@@ -232,8 +289,16 @@ public class SplashActivity extends AppCompatActivity implements
 
             dataCursor = db.fetch(Dbhelper.SYS, fieldNames, null, null, "sysId DESC");
 
+            Utils.Log(" C ", String.valueOf(dataCursor.getCount()));
+
             if (dataCursor.getCount() <= 0) {
                 isAuthenticated = false;
+            } else {
+                isAuthenticated = true;
+                if (!dataCursor.getString(1).equalsIgnoreCase("NULL")) {
+                    textViewUserName.setVisibility(View.VISIBLE);
+                    textViewUserName.setText(dataCursor.getString(1));
+                }
             }
 
             db.closeCursor(dataCursor);
@@ -242,44 +307,48 @@ public class SplashActivity extends AppCompatActivity implements
         }
 
         if (!isAuthenticated) {
-
-            // Configure sign-in to request the user's ID, email address, and basic
-            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
-                    GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.firebase_web_client_id))
-                    .requestEmail()
-                    .build();
-
-            if (mGoogleApiClient == null) {
-                // Build a GoogleApiClient with access to the Google Sign-In API and the
-                // options specified by gso.
-                mGoogleApiClient = new GoogleApiClient.Builder(this)
-                        .enableAutoManage(this /* FragmentActivity */,
-                                this /* OnConnectionFailedListener */)
-                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                        .build();
-            }
-
-            signIn();
+            buttonSkip.setVisibility(View.VISIBLE);
+            signInButton.setVisibility(View.VISIBLE);
         } else {
+            buttonSkip.setVisibility(View.GONE);
+            signInButton.setVisibility(View.GONE);
             goToApp();
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getIdToken());
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
+
+        mProgress.setMessage(getString(R.string.updating_websaver));
+        mProgress.show();
+        mProgress.setCancelable(false);
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (mProgress != null && mProgress.isShowing()) {
+                            mProgress.dismiss();
+                        }
                         if (task.isSuccessful()) {
-                            //FirebaseUser user = mAuth.getCurrentUser();
-                            updateAccount();
+
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            if (user != null) {
+                                strAccount = user.getEmail();
+
+                                signInButton.setVisibility(View.GONE);
+                                buttonSkip.setVisibility(View.GONE);
+
+                                textViewUserName.setVisibility(View.VISIBLE);
+                                textViewUserName.setText(strAccount);
+
+                                updateAccount();
+                            } else {
+                                Utils.toast(1, 1, getString(R.string.firebase_failed), SplashActivity.this);
+                            }
                         } else {
-                            Utils.toast(1, 1, "Failed", SplashActivity.this);
+                            Utils.toast(1, 1, getString(R.string.firebase_failed), SplashActivity.this);
                         }
                     }
                 });

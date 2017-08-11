@@ -30,6 +30,14 @@
     <string name="no_url">No URL!!!</string>
     <string name="unknown_error">Something Went Wrong. Try Again Later!!!</string>
     <string name="clear">clear</string>
+    <string name="google_sign_in">Google Sign in Declined</string>
+    <string name="phone_state_declined">Access Phone status declined</string>
+    <string name="authenticating">Authenticating…</string>
+    <string name="updating_websaver">Updating with webSaver…</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="skip">Skip</string>
+    <string name="databse_error">Unknown Datbase error</string>
+    <string name="firebase_failed">Failed</string>
 
     <!--Google Strings-->
     <!--<string name="google_app_id">889239071779</string>-->

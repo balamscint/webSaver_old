@@ -379,7 +379,9 @@ public class PDFActivity extends Activity {
         @Override
         protected void onPostExecute(Boolean result) {
 
-            mProgress.dismiss();
+            if (mProgress != null && mProgress.isShowing()) {
+                mProgress.dismiss();
+            }
 
             if (result) {
                 getPdfList();
