@@ -32,6 +32,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.wpdf.dbConfig.Dbcon;
+import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.libs.Utils;
 
 import pl.tajchert.nammu.PermissionCallback;
@@ -102,7 +103,7 @@ public class SplashActivity extends AppCompatActivity implements
                 .repeat(1)
                 .playOn(findViewById(R.id.fullscreen_content));
 
-        mHandler.postDelayed(mGoToApp, 890);
+        mHandler.postDelayed(mGoToApp, 860);
     }
 
     @Override
@@ -215,6 +216,7 @@ public class SplashActivity extends AppCompatActivity implements
             mGoogleApiClient.disconnect();
         }
 
+        db.close();
         permissionHelper.finish();
     }
 
@@ -226,18 +228,17 @@ public class SplashActivity extends AppCompatActivity implements
 
         try {
 
-            String a[] = new String[]{"uuid", "account"};
+            String fieldNames[] = new String[]{"uuid", "account"};
 
-            dataCursor = db.fetch("sys", a, null, null, "sysId DESC");
+            dataCursor = db.fetch(Dbhelper.SYS, fieldNames, null, null, "sysId DESC");
 
             if (dataCursor.getCount() <= 0) {
                 isAuthenticated = false;
             }
 
-            dataCursor.close();
+            db.closeCursor(dataCursor);
         } catch (Exception e) {
-            if (dataCursor != null && !dataCursor.isClosed())
-                dataCursor.close();
+            db.closeCursor(dataCursor);
         }
 
         if (!isAuthenticated) {

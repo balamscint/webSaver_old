@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.ClipboardManager;
 import android.view.KeyEvent;
@@ -20,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ayz4sci.androidfactory.permissionhelper.PermissionHelper;
 import com.crashlytics.android.Crashlytics;
@@ -32,7 +30,7 @@ import com.wpdf.adapter.ViewListAdapter;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.libs.Utils;
-import com.wpdf.model.ViewModel;
+import com.wpdf.model.PdfModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,21 +39,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 import pl.tajchert.nammu.PermissionCallback;
 
 public class PDFActivity extends Activity {
 
-    private final static String TAG = "PDFActivity";
-    private static List<ViewModel> list = new ArrayList<>();
-    private static String urlMake;
+    private static List<PdfModel> pdfList = new ArrayList<>();
+    private static String strUrl;
     private EditText urlEditText;
-    private ProgressDialog mProgress = null;
     private Dbcon db = null;
     private ListView listView;
     private FirebaseAnalytics mFirebaseAnalytics;
     private PermissionHelper permissionHelper;
+    private ViewListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +66,6 @@ public class PDFActivity extends Activity {
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        mProgress = new ProgressDialog(this);
-
         urlEditText = findViewById(R.id.editText1);
         listView = findViewById(R.id.listFiles);
 
@@ -77,12 +73,12 @@ public class PDFActivity extends Activity {
 
         permissionHelper = PermissionHelper.getInstance(this);
 
-        getModel();
+        getPdfList();
 
-        ViewListAdapter adapter = new ViewListAdapter(this, list);
+        adapter = new ViewListAdapter(this, pdfList);
         listView.setAdapter(adapter);
 
-        TextView.OnEditorActionListener exampleListener = new TextView.OnEditorActionListener() {
+        TextView.OnEditorActionListener editTextListener = new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
 
@@ -96,7 +92,7 @@ public class PDFActivity extends Activity {
             }
         };
 
-        urlEditText.setOnEditorActionListener(exampleListener);
+        urlEditText.setOnEditorActionListener(editTextListener);
 
         ClipboardManager clipboard;
 
@@ -192,7 +188,7 @@ public class PDFActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //db.close();
+        db.close();
         permissionHelper.finish();
     }
 
@@ -202,19 +198,19 @@ public class PDFActivity extends Activity {
             if (!urlEditText.getText().toString().trim().equalsIgnoreCase("")) {
                 if (urlEditText.getText().toString().trim().contains(".")) {
 
-                    urlMake = urlEditText.getText().toString().trim();
+                    strUrl = urlEditText.getText().toString().trim();
 
-                    if (!urlMake.contains("http://") || !urlMake.contains("www.")) {
+                    if (!strUrl.contains("http://") || !strUrl.contains("www.")) {
 
-                        if (!urlMake.contains("www.")) {
-                            if (urlMake.contains("http://")) {
-                                urlMake = urlMake.substring(7);
+                        if (!strUrl.contains("www.")) {
+                            if (strUrl.contains("http://")) {
+                                strUrl = strUrl.substring(7);
                             }
 
-                            urlMake = "http://www." + urlMake;
+                            strUrl = "http://www." + strUrl;
                         } else {
-                            if (!urlMake.contains("http://")) {
-                                urlMake = "http://" + urlMake;
+                            if (!strUrl.contains("http://")) {
+                                strUrl = "http://" + strUrl;
                             }
                         }
                     }
@@ -232,9 +228,6 @@ public class PDFActivity extends Activity {
                             imm.hideSoftInputFromWindow(urlEditText.getWindowToken(), 0);
                         }
 
-                        mProgress.setMessage("Saving...");
-                        mProgress.show();
-                        mProgress.setCancelable(false);
 
                         Bundle params = new Bundle();
                         params.putString("EVENT", "PDF Requested");
@@ -247,100 +240,80 @@ public class PDFActivity extends Activity {
                         Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
                     }
                 } else {
-                    Toast.makeText(PDFActivity.this, "Invalid URL!!!", Toast.LENGTH_LONG).show();
+                    Utils.toast(1, 1, getString(R.string.invalid_url), PDFActivity.this);
                 }
             } else {
-                Toast.makeText(PDFActivity.this, "No URL!!!", Toast.LENGTH_LONG).show();
+                Utils.toast(1, 1, getString(R.string.no_url), PDFActivity.this);
             }
 
         } catch (Exception e) {
-            Toast.makeText(PDFActivity.this, "Something Went Wrong. Try Again Later!!!", Toast.LENGTH_LONG).show();
+            Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
         }
     }
 
-    private void getModel() {
-
-        list.clear();
+    private void getPdfList() {
 
         Cursor dataCursor = null;
 
         try {
 
-            String a[] = new String[]{"path", "pdfId"};
+            String fieldNames[] = new String[]{"path", "pdfId"};
 
-            dataCursor = db.fetch("pdf_list", a, null, null, "pdfId DESC");
+            dataCursor = db.fetch(Dbhelper.PDF_LIST, fieldNames, null, null, "pdfId DESC");
 
-            dataCursor.moveToFirst();
+            Utils.Log("DF", String.valueOf(dataCursor.getCount()));
 
             if (dataCursor.getCount() > 0) {
+
                 String path, tempPath, pdfId, time, fullPath;
 
-                Utils.Log(TAG, dataCursor.getString(0));
+                if (Utils.isExternalStorageAvailable()) {
 
-                //if (isExternalStorageAvailable()) {
-                    File root = new File(Environment.getExternalStorageDirectory() + File.separator + "webSaver" + File.separator);
+                    //pdfList.clear();
 
-                    File f = null;
+                    File f;
 
-                    Date lastModified = null;
+                    Date lastModified;
 
-                    SimpleDateFormat df1 = new SimpleDateFormat("E yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat dateTime = new SimpleDateFormat("E yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
                     while (!dataCursor.isAfterLast()) {
 
                         if (dataCursor.getString(0) != null && !dataCursor.getString(0).trim().equalsIgnoreCase("")) {
                             path = dataCursor.getString(0);
 
+                            Utils.Log("DF 1 ", path);
+
                             pdfId = String.valueOf(dataCursor.getInt(1));
 
-                            f = new File(root, path);
+                            f = new File(Utils.getFile(this), path);
 
                             lastModified = new Date(f.lastModified());
 
                             tempPath = path.substring(0, path.length() - 4);
 
                             if (f.exists()) {
-                                time = df1.format(lastModified);
+                                time = dateTime.format(lastModified);
                                 fullPath = Uri.fromFile(f).toString().substring(7);
-                                list.add(get(tempPath, fullPath, time));//.substring(0,19)
+
+                                pdfList.add(get(tempPath, fullPath, time));
                             } else {
                                 db.delete("pdf_list", "pdfId=" + pdfId, null);
                             }
-                            dataCursor.moveToNext();
                         }
-                        dataCursor.close();
+                        dataCursor.moveToNext();
                     }
-                // }
+                    db.closeCursor(dataCursor);
+                }
             }
 
         } catch (Exception e) {
-            //list = null;
-
-            if (dataCursor != null && !dataCursor.isClosed())
-                dataCursor.close();
+            db.closeCursor(dataCursor);
         }
-
-//        return list;
     }
 
-    private ViewModel get(String n, String p, String t) {
-        return new ViewModel(n, p, t);
-    }
-
-    private boolean isExternalStorageAvailable() {
-        boolean mExternalStorageAvailable = false;
-
-        String state = Environment.getExternalStorageState();
-
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            // We can read and write the media
-            mExternalStorageAvailable = true;
-        } else // We can only read the media
-// Something else is wrong. It may be one of many other states, but all we need
-//  to know is we can neither read nor write
-            mExternalStorageAvailable = Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-
-        return mExternalStorageAvailable;
+    private PdfModel get(String n, String p, String t) {
+        return new PdfModel(n, p, t);
     }
 
     private void signOut() {
@@ -348,14 +321,23 @@ public class PDFActivity extends Activity {
     }
 
 
-
     /**
      * Represents an asynchronous Task to download PDF
      */
-    public class DownloadPDF extends AsyncTask<Void, Void, Boolean> {
+    private class DownloadPDF extends AsyncTask<Void, Void, Boolean> {
 
-        private String result = null, urlTest = "";
+        private File file;
+        private ProgressDialog mProgress;
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgress = new ProgressDialog(PDFActivity.this);
+
+            mProgress.setMessage("Saving...");
+            mProgress.show();
+            mProgress.setCancelable(false);
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -363,15 +345,12 @@ public class PDFActivity extends Activity {
             boolean isSuccess = false;
 
             try {
-                //FileOutputStream fileStream;
 
-                Utils.Log(TAG, "F");
+                String requestedURL[] = strUrl.split("://");
+                String domain[] = requestedURL[1].split("\\.");
 
-                File root = android.os.Environment.getExternalStorageDirectory();
-
-                File dir = new File(root.getAbsolutePath() + "/webSaver");
-                dir.mkdirs();
-                File file = new File(dir, "data.pdf");
+                String fileName = domain[1] + "_" + System.currentTimeMillis();
+                file = new File(Utils.getFile(PDFActivity.this), fileName);
 
                 // create an API client instance
                 Client client = new Client(getString(R.string.pdfcrowd_user_name),
@@ -379,22 +358,18 @@ public class PDFActivity extends Activity {
 
                 // convert a web page and save the PDF to a file
                 FileOutputStream fileStream = new FileOutputStream(file);
-                fileStream = openFileOutput("data.pdf", MODE_APPEND); //new FileOutputStream("example.pdf");
-                client.convertURI(urlMake, fileStream);
+                client.convertURI(strUrl, fileStream);
                 fileStream.close();
 
-                String filePath = dir.getAbsolutePath() + "/data.pdf";
-
-                Utils.Log(TAG, filePath);
-
-                db.insert(new String[]{filePath}, new String[]{"path"}, Dbhelper.PDF_LIST);
+                db.insert(new String[]{fileName}, new String[]{"path"}, Dbhelper.PDF_LIST);
 
                 // retrieve the number of credits in your account
                 //Integer ncredits = client.numTokens();
+
+                isSuccess = true;
             } catch (PdfcrowdError why) {
                 why.printStackTrace();
             } catch (IOException exc) {
-                // handle the exception
                 exc.printStackTrace();
             }
 
@@ -406,29 +381,20 @@ public class PDFActivity extends Activity {
 
             mProgress.dismiss();
 
+            if (result) {
+                getPdfList();
+                adapter.notifyDataSetChanged();
 
-            /*File root = new File(Environment.getExternalStorageDirectory() + File.separator + "webSaver" + File.separator);
+                Intent myIntent = new Intent(Intent.ACTION_VIEW);
+                String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+                String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                myIntent.setDataAndType(Uri.fromFile(file), mimetype);
+                startActivity(myIntent);
 
-            if(!root.exists()&&!root.isDirectory())
-            root.mkdirs();
-
-            File f = new File (root,result);
-
-            String fieldNames[] = new String[]{"path"};
-
-            String fieldValues[] = new String[]{result};
-            db.insert(fieldValues,fieldNames,"pdf_list");
-
-            Intent myIntent = new Intent(Intent.ACTION_VIEW);
-            String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(f).toString());
-            String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            myIntent.setDataAndType(Uri.fromFile(f),mimetype);
-
-
-            startActivity(myIntent);
-
-            Toast.makeText(PDFActivity.this,getString(R.string.file_name)+result, Toast.LENGTH_LONG).show();*/
-
+                Utils.toast(1, 1, getString(R.string.file_name) + result, PDFActivity.this);
+            } else {
+                Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
+            }
         }
 
     }

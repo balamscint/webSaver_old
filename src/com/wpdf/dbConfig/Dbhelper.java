@@ -9,15 +9,16 @@ public class Dbhelper extends SQLiteOpenHelper {
     public static final String PDF_LIST = "pdf_list";
     public static final String SYS = "sys";
     private static final String DATABASE_NAME = "websaver";
-    private static final int DATABASE_VERSION = 3;
-    private static final String TABLE_CREATE_PDF = "create table pdf_list " +
-            "(pdfId integer primary key autoincrement,path text not null);";
+    private static final int DATABASE_VERSION = 2;
+    private static final String TABLE_CREATE_PDF = "create table " + PDF_LIST
+            + " (pdfId integer primary key autoincrement,path text not null);";
 
-    private static final String TABLE_CREATE_SYS = "create table sys (sysId integer primary key " +
+    private static final String TABLE_CREATE_SYS = "create table " + SYS
+            + " (sysId integer primary key " +
             "autoincrement,uuid text not null,account text not null);";
 
 
-    public Dbhelper(Context context) {
+    Dbhelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -33,13 +34,13 @@ public class Dbhelper extends SQLiteOpenHelper {
         dropandcreate(database);
     }
 
-    public void dropandcreate(SQLiteDatabase database) {
+    private void dropandcreate(SQLiteDatabase database) {
         drop(database);
         onCreate(database);
     }
 
-    public void drop(SQLiteDatabase database) {
-        database.execSQL("DROP TABLE IF EXISTS pdf_list");
-        database.execSQL("DROP TABLE IF EXISTS sys");
+    private void drop(SQLiteDatabase database) {
+        database.execSQL("DROP TABLE IF EXISTS " + PDF_LIST);
+        database.execSQL("DROP TABLE IF EXISTS " + SYS);
     }
 }

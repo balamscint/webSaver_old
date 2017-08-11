@@ -10,15 +10,14 @@ public class Dbcon {
 
     private Context context;
     private SQLiteDatabase database;
-    private Dbhelper dbHelper;
 
     public Dbcon(Context context) {
         this.context = context;
         open();
     }
 
-    public Dbcon open() throws SQLException {
-        dbHelper = new Dbhelper(context);
+    private Dbcon open() throws SQLException {
+        Dbhelper dbHelper = new Dbhelper(context);
         try {
             database = dbHelper.getWritableDatabase();
         } catch (Exception e) {
@@ -31,6 +30,11 @@ public class Dbcon {
     public void close() {
         if (database != null && database.isOpen())
             database.close();
+    }
+
+    public void closeCursor(Cursor cursor) {
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
     }
 
 

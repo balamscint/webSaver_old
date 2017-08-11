@@ -1,11 +1,11 @@
 package com.wpdf.model;
 
-public class ViewModel {
+public class PdfModel {
 
     private String name, path, time;
 
 
-    public ViewModel(String name, String path, String time) {
+    public PdfModel(String name, String path, String time) {
         this.name = name;
         this.path = path;
         this.time = time;
@@ -24,15 +24,7 @@ public class ViewModel {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public void setSaved(String time) {
-        this.time = time;
     }
 }

@@ -23,9 +23,13 @@
     <string name="text_only">* Text only is not supported in all sites</string>
     <string name="no_info">No Entries</string>
     <string name="text_only_checkbox">Text only</string>
-    <string name="url_sample">google.com</string>
+    <string name="url_sample">url : (google.com)</string>
     <string name="create_button">Create PDF</string>
     <string name="app_logo">wS</string>
+    <string name="invalid_url">Invalid URL!!!</string>
+    <string name="no_url">No URL!!!</string>
+    <string name="unknown_error">Something Went Wrong. Try Again Later!!!</string>
+    <string name="clear">clear</string>
 
     <!--Google Strings-->
     <!--<string name="google_app_id">889239071779</string>-->

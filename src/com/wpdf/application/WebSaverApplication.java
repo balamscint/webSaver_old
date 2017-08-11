@@ -7,12 +7,12 @@ package com.wpdf.application;
 import android.app.Application;
 import android.os.Build;
 
+import com.wpdf.websaver.BuildConfig;
+
 public class WebSaverApplication extends Application {
 
     public static final int iSdkVersion = Build.VERSION.SDK_INT;
-    //public static final int iAppVersion = BuildConfig.VERSION_CODE;
-    public static final String strOs = "android";
-    public static final int CACHE_EXPIRE = 1;//In Minutes
-    public static final boolean isLive = true;
+    public static final int iAppVersion = BuildConfig.VERSION_CODE;
+    public static final boolean isLive = false;
 
 }

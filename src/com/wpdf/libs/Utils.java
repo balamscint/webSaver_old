@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import com.wpdf.application.WebSaverApplication;
 import com.wpdf.websaver.R;
 
+import java.io.File;
+
 /**
  * Created by admin on 10/08/17.
  */
@@ -23,9 +26,23 @@ import com.wpdf.websaver.R;
 public class Utils {
 
     public static void Log(String tag, String message) {
-        if (WebSaverApplication.isLive) {
+        if (!WebSaverApplication.isLive) {
             Log.e(tag, message);
         }
+    }
+
+    public static File getFile(Context context) {
+
+        File root = Environment.getExternalStorageDirectory();
+
+        File dir = new File(root.getAbsolutePath() + File.separator +
+                context.getString(R.string.app_name));
+
+        if (!dir.exists() && !root.isDirectory()) {
+            dir.mkdirs();
+        }
+
+        return dir;
     }
 
     public static void toast(int type, int duration, String message, Context context) {
@@ -76,6 +93,23 @@ public class Utils {
 
         }
         return false;
+    }
+
+    public static boolean isExternalStorageAvailable() {
+        boolean mExternalStorageAvailable = false;
+
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            mExternalStorageAvailable = true;
+        } else { // We can only read the media
+            // Something else is wrong. It may be one of many other states, but all we need
+            //  to know is we can neither read nor write
+            mExternalStorageAvailable = Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+        }
+
+        return mExternalStorageAvailable;
     }
 
     /*public static void setTaskBarColored(Activity context) {
