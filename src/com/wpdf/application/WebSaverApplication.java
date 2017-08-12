@@ -15,4 +15,6 @@ public class WebSaverApplication extends Application {
     public static final int iAppVersion = BuildConfig.VERSION_CODE;
     public static final boolean isLive = false;
 
+    public static final String strPDFExt = ".pdf";
+
 }

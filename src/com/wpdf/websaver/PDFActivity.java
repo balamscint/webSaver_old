@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.pdfcrowd.Client;
 import com.pdfcrowd.PdfcrowdError;
 import com.wpdf.adapter.ViewListAdapter;
+import com.wpdf.application.WebSaverApplication;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.libs.Utils;
@@ -261,17 +262,15 @@ public class PDFActivity extends Activity {
 
             dataCursor = db.fetch(Dbhelper.PDF_LIST, fieldNames, null, null, "pdfId DESC");
 
-            Utils.Log("DF", String.valueOf(dataCursor.getCount()));
-
             if (dataCursor.getCount() > 0) {
 
-                String path, tempPath, pdfId, time, fullPath;
+                String strName, pdfId, time, fullPath;
 
                 if (Utils.isExternalStorageAvailable()) {
 
-                    //pdfList.clear();
+                    pdfList.clear();
 
-                    File f;
+                    File file;
 
                     Date lastModified;
 
@@ -280,23 +279,19 @@ public class PDFActivity extends Activity {
                     while (!dataCursor.isAfterLast()) {
 
                         if (dataCursor.getString(0) != null && !dataCursor.getString(0).trim().equalsIgnoreCase("")) {
-                            path = dataCursor.getString(0);
-
-                            Utils.Log("DF 1 ", path);
+                            strName = dataCursor.getString(0);
 
                             pdfId = String.valueOf(dataCursor.getInt(1));
 
-                            f = new File(Utils.getFile(this), path);
+                            file = new File(Utils.getFile(this), strName + ".pdf");
 
-                            lastModified = new Date(f.lastModified());
+                            lastModified = new Date(file.lastModified());
 
-                            tempPath = path.substring(0, path.length() - 4);
-
-                            if (f.exists()) {
+                            if (file.exists()) {
                                 time = dateTime.format(lastModified);
-                                fullPath = Uri.fromFile(f).toString().substring(7);
+                                fullPath = Uri.fromFile(file).toString();
 
-                                pdfList.add(get(tempPath, fullPath, time));
+                                pdfList.add(new PdfModel(strName, fullPath, time));
                             } else {
                                 db.delete("pdf_list", "pdfId=" + pdfId, null);
                             }
@@ -312,10 +307,6 @@ public class PDFActivity extends Activity {
         }
     }
 
-    private PdfModel get(String n, String p, String t) {
-        return new PdfModel(n, p, t);
-    }
-
     private void signOut() {
         FirebaseAuth.getInstance().signOut();
     }
@@ -328,6 +319,7 @@ public class PDFActivity extends Activity {
 
         private File file;
         private ProgressDialog mProgress;
+        private String fileName;
 
         @Override
         protected void onPreExecute() {
@@ -349,8 +341,8 @@ public class PDFActivity extends Activity {
                 String requestedURL[] = strUrl.split("://");
                 String domain[] = requestedURL[1].split("\\.");
 
-                String fileName = domain[1] + "_" + System.currentTimeMillis();
-                file = new File(Utils.getFile(PDFActivity.this), fileName);
+                fileName = domain[1] + "_" + System.currentTimeMillis();
+                file = new File(Utils.getFile(PDFActivity.this), fileName + WebSaverApplication.strPDFExt);
 
                 // create an API client instance
                 Client client = new Client(getString(R.string.pdfcrowd_user_name),
@@ -390,10 +382,11 @@ public class PDFActivity extends Activity {
                 Intent myIntent = new Intent(Intent.ACTION_VIEW);
                 String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
                 String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                myIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 myIntent.setDataAndType(Uri.fromFile(file), mimetype);
                 startActivity(myIntent);
 
-                Utils.toast(1, 1, getString(R.string.file_name) + result, PDFActivity.this);
+                Utils.toast(1, 1, getString(R.string.file_name) + fileName, PDFActivity.this);
             } else {
                 Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
             }

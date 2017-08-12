@@ -38,7 +38,7 @@ public class Utils {
         File dir = new File(root.getAbsolutePath() + File.separator +
                 context.getString(R.string.app_name));
 
-        if (!dir.exists() && !root.isDirectory()) {
+        if (!dir.exists() || !root.isDirectory()) {
             dir.mkdirs();
         }
 

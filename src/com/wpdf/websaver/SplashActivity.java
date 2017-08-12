@@ -44,14 +44,13 @@ public class SplashActivity extends AppCompatActivity implements
 
 
     private static final int RC_SIGN_IN = 1001;
-    private static final String TAG = "SplashActivity";
     private static GoogleApiClient mGoogleApiClient = null;
     private static boolean isAuthenticated;
     private static String strAccount;
     private Dbcon db = null;
     private SignInButton signInButton;
     private Button buttonSkip;
-    private TextView textViewUserName, textViewAppName;
+    private TextView textViewUserName;
     private PermissionHelper permissionHelper;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgress;
@@ -69,7 +68,6 @@ public class SplashActivity extends AppCompatActivity implements
 
         // Set the dimensions of the sign-in button.
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        textViewAppName = (TextView) findViewById(R.id.fullscreen_content);
         textViewUserName = (TextView) findViewById(R.id.userName);
         buttonSkip = (Button) findViewById(R.id.buttonSkip);
 
@@ -92,20 +90,13 @@ public class SplashActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        showSignIn();
-    }
-
-    private void showSignIn() {
-        if (signInButton != null) {
-            signInButton.setSize(SignInButton.SIZE_STANDARD);
-            signInButton.setVisibility(View.VISIBLE);
-        }
+        Utils.toast(1, 1, connectionResult.getErrorMessage(), SplashActivity.this);
     }
 
     private void goToApp() {
 
         YoYo.with(Techniques.FadeIn)
-                .duration(700)
+                .duration(500)
                 .repeat(1)
                 .onEnd(new YoYo.AnimatorCallback() {
                     @Override
