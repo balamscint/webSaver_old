@@ -15,23 +15,25 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--keep class android.support.v4.** { *; }
--keep interface android.support.v4.** { *; }
--dontwarn android.support.v4.**
 
--keep class android.support.v7.** { *; }
--keep interface android.support.v7.** { *; }
--dontwarn android.support.v7.**
 
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
+#-keep class android.support.v4.** { *; }
+#-keep interface android.support.v4.** { *; }
+#-dontwarn android.support.v4.**
+
+#-keep class android.support.v7.** { *; }
+#-keep interface android.support.v7.** { *; }
+#-dontwarn android.support.v7.**
+
+#-keepclassmembers enum * {
+#    public static **[] values();
+#    public static ** valueOf(java.lang.String);
+#}
 
 #ignore duplicate libraries
--dontnote android.net.http.*
--dontnote org.apache.commons.codec.**
--dontnote org.apache.http.**
+#-dontnote android.net.http.*
+#-dontnote org.apache.commons.codec.**
+#-dontnote org.apache.http.**
 
 -keepattributes *Annotation*
 #-dontwarn

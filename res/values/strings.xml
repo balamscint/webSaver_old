@@ -8,11 +8,8 @@
     <string name="contact">\nfeedback @ balamscint@gmail.com"</string>
     <string name="error">Something Went Wrong. Try Again Later!!!</string>
     <string name="no_mount">Mount Your SD Card!!!</string>
-    <string name="file_name">File Name :</string>
+    <string name="file_name">File Name: </string>
 
-    <string name="title_activity_splash">SplashActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="firebase_web_client_id">889239071779-c4707suhraeeguj8au7pf674srm02l63.apps.googleusercontent.com</string>
     <string name="phone_state_request">Need Phone State Access</string>
     <string name="internet_request">To check Internet Connection</string>
@@ -20,9 +17,9 @@
     <string name="pdfcrowd_user_name">balamscint</string>
     <string name="pdfcrowd_key">134f7114a3bc77c60c8adaeb3ca9d91f</string>
     <string name="no_internet">Check Your Internet Connection!!!</string>
-    <string name="text_only">* Text only is not supported in all sites</string>
+    <!--<string name="text_only">* Text only is not supported in all sites</string>-->
     <string name="no_info">No Entries</string>
-    <string name="text_only_checkbox">Text only</string>
+    <!--<string name="text_only_checkbox">Text only</string>-->
     <string name="url_sample">url : (google.com)</string>
     <string name="create_button">Create PDF</string>
     <string name="app_logo">wS</string>

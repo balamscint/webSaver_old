@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccentDark"
+    android:background="@color/colorPrimaryDark"
     tools:context="com.wpdf.websaver.SplashActivity">
 
     <FrameLayout
@@ -25,17 +25,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_general"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/buttonSkip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_general"
-                android:background="@drawable/round"
+                android:background="@drawable/button_blue"
                 android:text="@string/skip"
-                android:textColor="#ffffff"
-                android:visibility="gone" />
+                android:textColor="@color/black_overlay"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/userName"
@@ -59,7 +59,7 @@
         android:keepScreenOn="true"
         android:text="@string/app_name"
         android:textColor="@color/colorWhite"
-        android:textSize="50sp"
+        android:textSize="@dimen/text_size_banner"
         android:textStyle="bold" />
 
 </FrameLayout>
