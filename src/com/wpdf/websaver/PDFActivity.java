@@ -1,15 +1,18 @@
 package com.wpdf.websaver;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -140,7 +143,7 @@ public class PDFActivity extends Activity {
                 });*/
 
 
-        permissionHelper.verifyPermission(
+        /*permissionHelper.verifyPermission(
                 new String[]{getString(R.string.internet_request),
                         getString(R.string.storage_request)},
                 new String[]{Manifest.permission.ACCESS_NETWORK_STATE,
@@ -156,7 +159,7 @@ public class PDFActivity extends Activity {
 
                     }
                 }
-        );
+        );*/
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -194,59 +197,65 @@ public class PDFActivity extends Activity {
     }
 
     public void Web2PDF() {
+
         try {
 
-            if (!urlEditText.getText().toString().trim().equalsIgnoreCase("")) {
-                if (urlEditText.getText().toString().trim().contains(".")) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
 
-                    strUrl = urlEditText.getText().toString().trim();
+                if (!urlEditText.getText().toString().trim().equalsIgnoreCase("")) {
+                    if (urlEditText.getText().toString().trim().contains(".")) {
 
-                    if (!strUrl.contains("http://") || !strUrl.contains("www.")) {
+                        strUrl = urlEditText.getText().toString().trim();
 
-                        if (!strUrl.contains("www.")) {
-                            if (strUrl.contains("http://")) {
-                                strUrl = strUrl.substring(7);
+                        if (!strUrl.contains("http://") || !strUrl.contains("www.")) {
+
+                            if (!strUrl.contains("www.")) {
+                                if (strUrl.contains("http://")) {
+                                    strUrl = strUrl.substring(7);
+                                }
+
+                                strUrl = "http://www." + strUrl;
+                            } else {
+                                if (!strUrl.contains("http://")) {
+                                    strUrl = "http://" + strUrl;
+                                }
+                            }
+                        }
+
+                        if (!Utils.isConnectingToInternet(this)) {
+                            Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
+                        }
+
+                        // Check if Internet present
+                        if (Utils.isConnectingToInternet(this)) {
+
+                            InputMethodManager imm = (InputMethodManager) getSystemService(
+                                    Context.INPUT_METHOD_SERVICE);
+                            if (imm != null) {
+                                imm.hideSoftInputFromWindow(urlEditText.getWindowToken(), 0);
                             }
 
-                            strUrl = "http://www." + strUrl;
+
+                            Bundle params = new Bundle();
+                            params.putString("EVENT", "PDF Requested");
+                            mFirebaseAnalytics.logEvent("CREATE", params);
+
+                            DownloadPDF downloadPDF = new DownloadPDF();
+
+                            downloadPDF.execute();
                         } else {
-                            if (!strUrl.contains("http://")) {
-                                strUrl = "http://" + strUrl;
-                            }
+                            Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
                         }
-                    }
-
-                    if (!Utils.isConnectingToInternet(this)) {
-                        Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
-                    }
-
-                    // Check if Internet present
-                    if (Utils.isConnectingToInternet(this)) {
-
-                        InputMethodManager imm = (InputMethodManager) getSystemService(
-                                Context.INPUT_METHOD_SERVICE);
-                        if (imm != null) {
-                            imm.hideSoftInputFromWindow(urlEditText.getWindowToken(), 0);
-                        }
-
-
-                        Bundle params = new Bundle();
-                        params.putString("EVENT", "PDF Requested");
-                        mFirebaseAnalytics.logEvent("CREATE", params);
-
-                        DownloadPDF downloadPDF = new DownloadPDF();
-
-                        downloadPDF.execute();
                     } else {
-                        Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
+                        Utils.toast(1, 1, getString(R.string.invalid_url), PDFActivity.this);
                     }
                 } else {
-                    Utils.toast(1, 1, getString(R.string.invalid_url), PDFActivity.this);
+                    Utils.toast(1, 1, getString(R.string.no_url), PDFActivity.this);
                 }
             } else {
-                Utils.toast(1, 1, getString(R.string.no_url), PDFActivity.this);
+                checkPermission();
             }
-
         } catch (Exception e) {
             Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
         }
@@ -304,6 +313,53 @@ public class PDFActivity extends Activity {
 
         } catch (Exception e) {
             db.closeCursor(dataCursor);
+        }
+    }
+
+    private void checkPermission() {
+        permissionHelper.verifyPermission(
+                new String[]{getString(R.string.phone_state_request)},
+                new String[]{android.Manifest.permission.READ_PHONE_STATE},
+                new PermissionCallback() {
+                    @Override
+                    public void permissionGranted() {
+                        updateAccount();
+                    }
+
+                    @Override
+                    public void permissionRefused() {
+                    }
+                }
+        );
+    }
+
+    @SuppressLint("HardwareIds")
+    private void updateAccount() {
+
+        TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+            String uuid = "NULL";
+            if (tManager != null) {
+                uuid = tManager.getDeviceId();
+            }
+
+            try {
+
+                String fieldValues[] = new String[]{uuid};
+                String a[] = new String[]{"uuid"};
+                long l = db.insert(fieldValues, a, "sys");
+
+                if (l <= 0) {
+                    Utils.toast(1, 1, getString(R.string.databse_error), PDFActivity.this);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
+            }
         }
     }
 
