@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/button_blue" android:state_focused="true" android:state_pressed="false" />
-    <item android:drawable="@drawable/button_blue" android:state_focused="true" android:state_pressed="true" />
-    <item android:drawable="@drawable/button_blue" android:state_focused="false" android:state_pressed="true" />
+
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <gradient android:angle="270" android:endColor="#ccc" android:startColor="#fff" />
+            <corners android:radius="5dp" />
+            <stroke android:width="2dp" android:color="#ccc" />
+        </shape>
+    </item>
+
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <gradient android:angle="270" android:endColor="#50a7e6" android:startColor="#50a7e6" />
+            <corners android:radius="5dp" />
+            <stroke android:width="1dp" android:color="#50a7e6" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient android:angle="90" android:endColor="#fff" android:startColor="#fff" />
+            <corners android:radius="5dp" />
+            <!--<solid android:color="#666" />
+            <stroke android:width="1dp"
+                android:color="#ccc" />-->
+        </shape>
+    </item>
+
 </selector>

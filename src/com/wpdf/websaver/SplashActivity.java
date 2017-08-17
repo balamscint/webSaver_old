@@ -67,9 +67,9 @@ public class SplashActivity extends AppCompatActivity implements
         mProgress = new ProgressDialog(SplashActivity.this);
 
         // Set the dimensions of the sign-in button.
-        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        textViewUserName = (TextView) findViewById(R.id.userName);
-        buttonSkip = (Button) findViewById(R.id.buttonSkip);
+        signInButton = findViewById(R.id.sign_in_button);
+        textViewUserName = findViewById(R.id.userName);
+        buttonSkip = findViewById(R.id.buttonSkip);
 
         if (signInButton != null) {
             findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -96,7 +96,7 @@ public class SplashActivity extends AppCompatActivity implements
     private void goToApp() {
 
         YoYo.with(Techniques.FadeIn)
-                .duration(500)
+                .duration(1500)
                 .repeat(1)
                 .onEnd(new YoYo.AnimatorCallback() {
                     @Override
@@ -121,10 +121,10 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void skip() {
-        buttonSkip.setEnabled(false);
-        buttonSkip.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        //buttonSkip.setEnabled(false);
+        //buttonSkip.setBackgroundColor(getResources().getColor(R.color.black_overlay));
         String fieldValues[] = new String[]{"NULL", "NULL"};
-        String a[] = new String[]{"uuid", "account"};
+        String a[] = new String[]{"account", "uuid"};
         long l = db.insert(fieldValues, a, "sys");
         if (l > 0) {
             goToApp();
