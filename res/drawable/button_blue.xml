@@ -10,16 +10,16 @@
 
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <gradient android:angle="270" android:endColor="@color/colorWhite" android:startColor="@color/colorPrimary" />
+            <gradient android:angle="270" android:endColor="#d8d8d8" android:startColor="#d8d8d8" />
             <corners android:radius="5dp" />
         </shape>
     </item>
 
     <item>
         <shape android:shape="rectangle">
-            <gradient android:angle="270" android:endColor="#ccc" android:startColor="@color/colorWhite" />
+            <!--<gradient android:angle="270" android:endColor="#d8d8d8" android:startColor="#d8d8d8" />-->
             <corners android:radius="5dp" />
-            <!--<solid android:color="#fff" />-->
+            <solid android:color="#f0f0f0" />
             <!--<stroke android:width="1dp"
                 android:color="#ccc" />-->
         </shape>
