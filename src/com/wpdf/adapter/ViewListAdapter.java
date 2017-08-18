@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wpdf.libs.GenericFileProvider;
@@ -59,10 +58,10 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
             convertView = inflator.inflate(R.layout.viewlayout, null);
 
             viewHolder = new ViewHolder();
-            viewHolder.name = convertView.findViewById(R.id.textView);
-            viewHolder.path = convertView.findViewById(R.id.textView3);
-            viewHolder.time = convertView.findViewById(R.id.textView2);
-            viewHolder.imgView = convertView.findViewById(R.id.imageView);
+            viewHolder.textViewName = convertView.findViewById(R.id.textViewName);
+            viewHolder.textViewTime = convertView.findViewById(R.id.textViewTime);
+            viewHolder.textViewIcon = convertView.findViewById(R.id.textViewIcon);
+            viewHolder.textViewSize = convertView.findViewById(R.id.textViewSize);
 
             convertView.setTag(viewHolder);
 
@@ -75,26 +74,26 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
 
         if (list.size() > 0) {
 
-            viewHolder.name.setTag(list.get(position).getName());
-            viewHolder.path.setTag(list.get(position).getName());
-            viewHolder.time.setTag(list.get(position).getName());
-            viewHolder.imgView.setTag(list.get(position).getName());
+            viewHolder.textViewName.setTag(list.get(position).getStrFileName());
+            viewHolder.textViewTime.setTag(list.get(position).getStrFileName());
+            viewHolder.textViewIcon.setTag(list.get(position).getStrFileName());
+            viewHolder.textViewSize.setTag(list.get(position).getStrFileName());
 
-            viewHolder.imgView.setOnClickListener(new View.OnClickListener() {
+            viewHolder.textViewIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     openFile((String) v.getTag());
                 }
             });
 
-            viewHolder.name.setOnClickListener(new View.OnClickListener() {
+            viewHolder.textViewName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     openFile((String) v.getTag());
                 }
             });
 
-            viewHolder.time.setOnClickListener(new View.OnClickListener() {
+            viewHolder.textViewTime.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -103,7 +102,7 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
                 }
             });
 
-            viewHolder.path.setOnClickListener(new View.OnClickListener() {
+            viewHolder.textViewSize.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     openFile((String) v.getTag());
@@ -114,13 +113,12 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
 
 
         ViewHolder holder = (ViewHolder) convertView.getTag();
-        holder.name.setText(list.get(position).getName());
-        holder.path.setText(list.get(position).getPath());
-        holder.time.setText(list.get(position).getTime());
+        holder.textViewName.setText(list.get(position).getStrFileName());
+        holder.textViewTime.setText(list.get(position).getStrFileModifiedTime());
+        holder.textViewSize.setText(list.get(position).getStrFileSize());
 
-        holder.name.setTextColor(Color.DKGRAY);
-        holder.path.setTextColor(Color.DKGRAY);
-        holder.time.setTextColor(Color.BLUE);
+        holder.textViewName.setTextColor(Color.DKGRAY);
+        holder.textViewTime.setTextColor(Color.BLUE);
 
         return convertView;
     }
@@ -160,7 +158,6 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
     }
 
     private class ViewHolder {
-        TextView name, path, time;
-        ImageView imgView;
+        TextView textViewName, textViewTime, textViewSize, textViewIcon;
     }
 } 

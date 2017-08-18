@@ -3,20 +3,15 @@ package com.wpdf.websaver;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.ayz4sci.androidfactory.permissionhelper.PermissionHelper;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.auth.api.Auth;
@@ -37,8 +32,6 @@ import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.libs.Utils;
 
-import pl.tajchert.nammu.PermissionCallback;
-
 public class SplashActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -51,7 +44,6 @@ public class SplashActivity extends AppCompatActivity implements
     private SignInButton signInButton;
     private Button buttonSkip;
     private TextView textViewUserName;
-    private PermissionHelper permissionHelper;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgress;
 
@@ -62,7 +54,6 @@ public class SplashActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_splash);
 
         db = new Dbcon(this);
-        permissionHelper = PermissionHelper.getInstance(this);
         mAuth = FirebaseAuth.getInstance();
         mProgress = new ProgressDialog(SplashActivity.this);
 
@@ -80,13 +71,6 @@ public class SplashActivity extends AppCompatActivity implements
         }
 
     }
-
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -121,8 +105,8 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void skip() {
-        //buttonSkip.setEnabled(false);
-        //buttonSkip.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        buttonSkip.setEnabled(false);
+        buttonSkip.setText(getString(R.string.skipped));
         String fieldValues[] = new String[]{"NULL", "NULL"};
         String a[] = new String[]{"account", "uuid"};
         long l = db.insert(fieldValues, a, "sys");
@@ -173,8 +157,6 @@ public class SplashActivity extends AppCompatActivity implements
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-        } else {
-            permissionHelper.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -188,15 +170,7 @@ public class SplashActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
 
             if (acct != null && acct.getDisplayName() != null) {
-
-                if (ActivityCompat.checkSelfPermission(this,
-                        android.Manifest.permission.READ_PHONE_STATE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                    firebaseAuthWithGoogle(acct);
-                } else {
-                    checkPermission(acct);
-                }
-
+                firebaseAuthWithGoogle(acct);
             } else {
                 Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
             }
@@ -205,53 +179,24 @@ public class SplashActivity extends AppCompatActivity implements
         }
     }
 
-    private void checkPermission(final GoogleSignInAccount account) {
-        permissionHelper.verifyPermission(
-                new String[]{getString(R.string.phone_state_request)},
-                new String[]{android.Manifest.permission.READ_PHONE_STATE},
-                new PermissionCallback() {
-                    @Override
-                    public void permissionGranted() {
-                        firebaseAuthWithGoogle(account);
-                    }
-
-                    @Override
-                    public void permissionRefused() {
-                        Utils.toast(1, 1, getString(R.string.phone_state_declined), SplashActivity.this);
-                    }
-                }
-        );
-    }
-
     @SuppressLint("HardwareIds")
     private void updateAccount() {
 
-        TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        try {
 
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            String fieldValues[] = new String[]{"NULL", strAccount};
+            String a[] = new String[]{"uuid", "account"};
+            long l = db.insert(fieldValues, a, "sys");
 
-            String uuid = "NULL";
-            if (tManager != null) {
-                uuid = tManager.getDeviceId();
+            if (l > 0) {
+                goToApp();
+            } else {
+                Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
             }
 
-            try {
-
-                String fieldValues[] = new String[]{uuid, strAccount};
-                String a[] = new String[]{"uuid", "account"};
-                long l = db.insert(fieldValues, a, "sys");
-
-                if (l > 0) {
-                    goToApp();
-                } else {
-                    Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
         }
     }
 
@@ -265,7 +210,6 @@ public class SplashActivity extends AppCompatActivity implements
         }
 
         db.close();
-        permissionHelper.finish();
     }
 
     @Override
@@ -301,9 +245,9 @@ public class SplashActivity extends AppCompatActivity implements
             buttonSkip.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.VISIBLE);
         } else {
-            buttonSkip.setVisibility(View.GONE);
-            signInButton.setVisibility(View.GONE);
-            goToApp();
+            buttonSkip.setVisibility(View.VISIBLE);
+            signInButton.setVisibility(View.VISIBLE);
+            //goToApp();
         }
     }
 

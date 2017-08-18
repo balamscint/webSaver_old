@@ -5,6 +5,13 @@
     android:background="@color/colorWhite"
     tools:context="com.wpdf.websaver.SplashActivity">
 
+    <!--TODO
+        1.Status bar color.
+        2.Text Logo Size.
+        3. Buttons Size
+        4. UI Tweaks
+        -->
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_general"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/buttonSkip"
@@ -33,8 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_general"
                 android:background="@drawable/button_blue"
-                android:elevation="2dp"
+                android:elevation="5dp"
                 android:text="@string/skip"
+                android:textAllCaps="false"
                 android:textColor="@color/black_overlay"
                 android:textStyle="bold"
                 android:visibility="visible" />
@@ -51,6 +59,7 @@
                 android:visibility="gone" />
 
         </LinearLayout>
+
     </FrameLayout>
 
     <TextView
@@ -63,5 +72,6 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="@dimen/text_size_banner"
         android:textStyle="bold" />
+
 
 </FrameLayout>

@@ -60,7 +60,7 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/round"
+            android:background="@drawable/button_grey"
             android:padding="@dimen/padding_general"
             android:text="@string/create_button"
             android:textColor="#ffffff"
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_general"
-            android:background="@drawable/round"
+            android:background="@drawable/button_grey"
             android:text="@string/clear"
             android:textColor="#ffffff" />
 

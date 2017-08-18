@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">webSaver</string>
-    <string name="ok">Ok</string>
+    <string name="ok">Okay</string>
     <string name="cancel">Cancel</string>
     <string name="about">Url or Web Page to PDF Converter</string>
     <string name="contact">\nfeedback @ balamscint@gmail.com"</string>
@@ -11,32 +11,38 @@
     <string name="file_name">File Name: </string>
 
     <string name="firebase_web_client_id">889239071779-c4707suhraeeguj8au7pf674srm02l63.apps.googleusercontent.com</string>
+
     <string name="phone_state_request">Need Phone State Access</string>
     <string name="internet_request">To check Internet Connection</string>
     <string name="storage_request">To store PDF file</string>
+
     <string name="pdfcrowd_user_name">balamscint</string>
     <string name="pdfcrowd_key">134f7114a3bc77c60c8adaeb3ca9d91f</string>
+
     <string name="no_internet">Check Your Internet Connection!!!</string>
-    <!--<string name="text_only">* Text only is not supported in all sites</string>-->
+    <!--<strnamename="text_only">* Text only is not supported in all sites</string>-->
     <string name="no_info">No Entries</string>
-    <!--<string name="text_only_checkbox">Text only</string>-->
+    <!--<strnamename="text_only_checkbox">Text only</string>-->
     <string name="url_sample">url : (google.com)</string>
-    <string name="create_button">Create PDF</string>
+    <string name="create_button">Save</string>
     <string name="app_logo">wS</string>
     <string name="invalid_url">Invalid URL!!!</string>
     <string name="no_url">No URL!!!</string>
     <string name="unknown_error">Something Went Wrong. Try Again Later!!!</string>
-    <string name="clear">clear</string>
+    <string name="clear">Clear</string>
     <string name="google_sign_in">Google Sign in Declined</string>
     <string name="phone_state_declined">Access Phone status declined</string>
     <string name="authenticating">Authenticating…</string>
-    <string name="updating_websaver">Updating with webSaver…</string>
+    <string name="updating_websaver">Updating. Please Wait…</string>
     <string name="please_wait">Please wait…</string>
     <string name="skip">Skip</string>
-    <string name="databse_error">Unknown Datbase error</string>
-    <string name="firebase_failed">Failed</string>
+    <string name="databse_error">Unknown Database error</string>
+    <string name="firebase_failed">Updation Failed</string>
+    <string name="pdf">PDF</string>
+    <string name="kb">kb</string>
+    <string name="skipped">Skipped</string>
 
     <!--Google Strings-->
-    <!--<string name="google_app_id">889239071779</string>-->
+    <!--<strnamename="google_app_id">889239071779</string>-->
 
 </resources>

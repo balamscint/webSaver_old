@@ -3,16 +3,21 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_general"
-    android:background="@drawable/edit_text_blue"
+    android:background="@drawable/button_blue"
     android:orientation="horizontal"
     android:padding="@dimen/padding_general">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="3dp"
-        android:src="@drawable/icon" />
+    <TextView
+        android:id="@+id/textViewIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_general"
+        android:background="@drawable/bg_round"
+        android:gravity="center"
+        android:padding="@dimen/padding_general"
+        android:text="@string/app_logo"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/text"

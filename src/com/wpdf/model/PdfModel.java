@@ -2,29 +2,25 @@ package com.wpdf.model;
 
 public class PdfModel {
 
-    private String name, path, time;
+    private String strFileName;
+    private String strFileModifiedTime;
+    private String strFileSize;
 
-
-    public PdfModel(String name, String path, String time) {
-        this.name = name;
-        this.path = path;
-        this.time = time;
+    public PdfModel(String strFileName, String strFileModifiedTime, String strFileSize) {
+        this.strFileName = strFileName;
+        this.strFileModifiedTime = strFileModifiedTime;
+        this.strFileSize = strFileSize;
     }
 
-
-    public String getName() {
-        return name;
+    public String getStrFileSize() {
+        return strFileSize;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getStrFileName() {
+        return strFileName;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public String getTime() {
-        return time;
+    public String getStrFileModifiedTime() {
+        return strFileModifiedTime;
     }
 }

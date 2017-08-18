@@ -283,6 +283,8 @@ public class PDFActivity extends Activity {
 
                     Date lastModified;
 
+                    long size;
+
                     SimpleDateFormat dateTime = new SimpleDateFormat("E yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
                     while (!dataCursor.isAfterLast()) {
@@ -296,11 +298,13 @@ public class PDFActivity extends Activity {
 
                             lastModified = new Date(file.lastModified());
 
+                            size = file.getTotalSpace() / (1024 * 1024);
+
                             if (file.exists()) {
                                 time = dateTime.format(lastModified);
                                 fullPath = Uri.fromFile(file).toString();
 
-                                pdfList.add(new PdfModel(strName, fullPath, time));
+                                pdfList.add(new PdfModel(strName, time, String.valueOf(size) + getString(R.string.kb)));
                             } else {
                                 db.delete("pdf_list", "pdfId=" + pdfId, null);
                             }
