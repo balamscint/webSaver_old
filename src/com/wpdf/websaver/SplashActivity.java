@@ -53,6 +53,8 @@ public class SplashActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_splash);
 
+        //sthis.getActionBar().hide();
+
         db = new Dbcon(this);
         mAuth = FirebaseAuth.getInstance();
         mProgress = new ProgressDialog(SplashActivity.this);
@@ -80,7 +82,7 @@ public class SplashActivity extends AppCompatActivity implements
     private void goToApp() {
 
         YoYo.with(Techniques.FadeIn)
-                .duration(1500)
+                .duration(900)
                 .repeat(1)
                 .onEnd(new YoYo.AnimatorCallback() {
                     @Override
@@ -245,9 +247,9 @@ public class SplashActivity extends AppCompatActivity implements
             buttonSkip.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.VISIBLE);
         } else {
-            buttonSkip.setVisibility(View.VISIBLE);
-            signInButton.setVisibility(View.VISIBLE);
-            //goToApp();
+            buttonSkip.setVisibility(View.GONE);
+            signInButton.setVisibility(View.GONE);
+            goToApp();
         }
     }
 

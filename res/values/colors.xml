@@ -3,7 +3,10 @@
     <color name="colorPrimary">#8FC6EE</color>
     <color name="colorAccentDark">#6fb6c4</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorWhiteVariant1">#f0f0f0</color>
     <color name="colorPrimaryDark">#50a7e6</color>
     <color name="colorRed">#e13e45</color>
     <color name="black_overlay">#66000000</color>
+    <color name="colorLightGrey">#c0c0c0</color>
+    <color name="colorGrey">#d8d8d8</color>
 </resources>

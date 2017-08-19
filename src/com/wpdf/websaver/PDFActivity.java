@@ -352,8 +352,8 @@ public class PDFActivity extends Activity {
 
             try {
 
-                String fieldValues[] = new String[]{uuid};
-                String a[] = new String[]{"uuid"};
+                String fieldValues[] = new String[]{uuid, "ULL"};
+                String a[] = new String[]{"uuid", "account"};
                 long l = db.insert(fieldValues, a, "sys");
 
                 if (l <= 0) {

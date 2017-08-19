@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_general"
-    android:background="@drawable/button_blue"
+    android:background="@drawable/button_skip"
     android:orientation="horizontal"
     android:padding="@dimen/padding_general">
 
