@@ -1,7 +1,6 @@
 package com.wpdf.websaver;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -14,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
 import android.view.KeyEvent;
@@ -51,7 +51,7 @@ import java.util.Locale;
 import io.fabric.sdk.android.Fabric;
 import pl.tajchert.nammu.PermissionCallback;
 
-public class PDFActivity extends Activity {
+public class PDFActivity extends AppCompatActivity {
 
     private static List<PdfModel> pdfList = new ArrayList<>();
     private static String strUrl;
@@ -276,7 +276,7 @@ public class PDFActivity extends Activity {
 
             if (dataCursor.getCount() > 0) {
 
-                String strName, pdfId, time, fullPath;
+                String strName, pdfId, time;
 
                 if (Utils.isExternalStorageAvailable()) {
 
@@ -305,7 +305,7 @@ public class PDFActivity extends Activity {
 
                             if (file.exists()) {
                                 time = dateTime.format(lastModified);
-                                fullPath = Uri.fromFile(file).toString();
+                                //fullPath = Uri.fromFile(file).toString();
 
                                 pdfList.add(new PdfModel(strName, time, String.valueOf(size) + getString(R.string.kb)));
                             } else {

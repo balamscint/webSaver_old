@@ -2,7 +2,6 @@ package com.wpdf.libs;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -47,10 +46,10 @@ public class Utils {
 
     public static void toast(int type, int duration, String message, Context context) {
 
-        String strColor = "#ffffff";
+        int color = context.getResources().getColor(R.color.colorPrimary);
 
         if (type == 2)
-            strColor = "#fcc485";
+            color = context.getResources().getColor(R.color.colorLightGrey);
 
         try {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -59,7 +58,7 @@ public class Utils {
 
             TextView text = layout.findViewById(R.id.text);
             text.setText(message);
-            text.setTextColor(Color.parseColor(strColor));
+            text.setTextColor(color);
 
             Toast toast = new Toast(context);
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
