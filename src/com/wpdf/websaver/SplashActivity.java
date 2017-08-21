@@ -247,9 +247,9 @@ public class SplashActivity extends AppCompatActivity implements
             buttonSkip.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.VISIBLE);
         } else {
-            buttonSkip.setVisibility(View.GONE);
+            buttonSkip.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.GONE);
-            goToApp();
+            //goToApp();
         }
     }
 

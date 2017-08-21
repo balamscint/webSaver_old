@@ -41,6 +41,7 @@
     <string name="pdf">PDF</string>
     <string name="kb">kb</string>
     <string name="skipped">Skipped</string>
+    <string name="no_pdf_opener">No PDF viewer application</string>
 
     <!--Google Strings-->
     <!--<strnamename="google_app_id">889239071779</string>-->

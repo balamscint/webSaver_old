@@ -1,6 +1,7 @@
 package com.wpdf.adapter;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -152,6 +153,10 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
 
             context.startActivity(intent);
 
+        } catch (ActivityNotFoundException aNFE) {
+            aNFE.printStackTrace();
+            //todo no intents
+            Utils.toast(1, 1, context.getString(R.string.no_pdf_opener), context);
         } catch (Exception e) {
             e.printStackTrace();
         }

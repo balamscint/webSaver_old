@@ -3,12 +3,14 @@ package com.wpdf.websaver;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -33,6 +35,7 @@ import com.wpdf.adapter.ViewListAdapter;
 import com.wpdf.application.WebSaverApplication;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
+import com.wpdf.libs.GenericFileProvider;
 import com.wpdf.libs.Utils;
 import com.wpdf.model.PdfModel;
 
@@ -439,12 +442,48 @@ public class PDFActivity extends Activity {
                 getPdfList();
                 adapter.notifyDataSetChanged();
 
-                Intent myIntent = new Intent(Intent.ACTION_VIEW);
+                try {
+
+                    File file = new File(Utils.getFile(PDFActivity.this), fileName + WebSaverApplication.strPDFExt);
+
+                    Intent intent = new Intent();
+
+                    if (Build.VERSION.SDK_INT > 24) {
+
+                        intent.setAction(Intent.ACTION_VIEW);
+                        Uri pdfURI = GenericFileProvider.getUriForFile(PDFActivity.this, getApplicationContext().getPackageName() +
+                                ".provider", file);
+                        /* Uri pdfURI = GenericFileProvider.getUriForFile(context, context.getApplicationContext()
+                        .getPackageName
+                                (), f);*/
+                        intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        intent.setType("application/pdf");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } else {
+                        String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
+                                Uri.fromFile(file).toString());
+                        String mimetype = android.webkit.MimeTypeMap.getSingleton().
+                                getMimeTypeFromExtension(extension);
+                        intent.setDataAndType(Uri.fromFile(file), mimetype);
+                    }
+
+                    startActivity(intent);
+
+                } catch (ActivityNotFoundException aNFE) {
+                    aNFE.printStackTrace();
+                    //todo no intents
+                    Utils.toast(1, 1, getString(R.string.no_pdf_opener), PDFActivity.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                /*Intent myIntent = new Intent(Intent.ACTION_VIEW);
                 String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
                 String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 myIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 myIntent.setDataAndType(Uri.fromFile(file), mimetype);
-                startActivity(myIntent);
+                startActivity(myIntent);*/
 
                 Utils.toast(1, 1, getString(R.string.file_name) + fileName, PDFActivity.this);
             } else {
