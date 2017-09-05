@@ -61,6 +61,13 @@ public class Dbcon {
 
     }
 
+    public boolean update(String where, String values[], String names[], String tbl, String args[]) {
+
+        ContentValues updateValues = createContentValues(values, names);
+
+        return database.update(tbl, updateValues, where, args) > 0;
+    }
+
     private ContentValues createContentValues(String values[], String names[]) {
         ContentValues values1 = new ContentValues();
 

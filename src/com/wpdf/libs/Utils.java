@@ -17,6 +17,10 @@ import com.wpdf.application.WebSaverApplication;
 import com.wpdf.websaver.R;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by admin on 10/08/17.
@@ -100,6 +104,8 @@ public class Utils {
         String state = Environment.getExternalStorageState();
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
+
+
             // We can read and write the media
             mExternalStorageAvailable = true;
         } else { // We can only read the media
@@ -136,5 +142,24 @@ public class Utils {
         return result;
     }
     */
+
+    public static List<String> splitLongText(String string, int length) {
+
+        List<String> strings = new ArrayList<>();
+        // int index = 0;
+
+        //
+        Pattern p = Pattern.compile("\\G\\s*(.{1," + length + "})(?=\\s|$)", Pattern.DOTALL);
+        Matcher m = p.matcher(string);
+        while (m.find())
+            strings.add(m.group(1));
+        //
+
+      /*  while (index < string.length()) {
+            strings.add(string.substring(index, Math.min(index + length, string.length())));
+            index += length;
+        }*/
+        return strings;
+    }
 
 }

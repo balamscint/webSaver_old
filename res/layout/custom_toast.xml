@@ -6,7 +6,7 @@
     android:layout_marginLeft="@dimen/margin_general"
     android:layout_marginRight="@dimen/margin_general"
     android:layout_marginStart="@dimen/margin_general"
-    android:background="@color/colorWhite"
+    android:background="@color/colorGrey"
     android:orientation="horizontal">
 
     <TextView

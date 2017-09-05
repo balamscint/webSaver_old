@@ -42,6 +42,10 @@
     <string name="kb">kb</string>
     <string name="skipped">Skipped</string>
     <string name="no_pdf_opener">No PDF viewer application</string>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="default_notification_channel_id">notification_id</string>
+    <string name="default_notification_channel_name">channel name</string>
+    <string name="no_notifications">No Notifications</string>
 
     <!--Google Strings-->
     <!--<strnamename="google_app_id">889239071779</string>-->

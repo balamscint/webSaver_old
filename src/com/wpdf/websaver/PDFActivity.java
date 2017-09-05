@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
@@ -51,7 +52,7 @@ import java.util.Locale;
 import io.fabric.sdk.android.Fabric;
 import pl.tajchert.nammu.PermissionCallback;
 
-public class PDFActivity extends AppCompatActivity {
+public class PDFActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static List<PdfModel> pdfList = new ArrayList<>();
     private static String strUrl;
@@ -61,6 +62,7 @@ public class PDFActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
     private PermissionHelper permissionHelper;
     private ViewListAdapter adapter;
+    private TextInputLayout textInputLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class PDFActivity extends AppCompatActivity {
 
         urlEditText = findViewById(R.id.editText1);
         listView = findViewById(R.id.listFiles);
+        textInputLayout = findViewById(R.id.text_input_layout);
 
         db = new Dbcon(this);
 
@@ -199,9 +202,25 @@ public class PDFActivity extends AppCompatActivity {
         permissionHelper.finish();
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.imageButtonNotification:
+                goToNotifications();
+                break;
+        }
+    }
+
+    private void goToNotifications() {
+        startActivity(new Intent(PDFActivity.this, NotificationActivity.class));
+        finish();
+    }
+
     public void Web2PDF() {
 
         try {
+
+            textInputLayout.setErrorEnabled(false);
 
             if (ActivityCompat.checkSelfPermission(this,
                     android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
@@ -254,7 +273,8 @@ public class PDFActivity extends AppCompatActivity {
                         Utils.toast(1, 1, getString(R.string.invalid_url), PDFActivity.this);
                     }
                 } else {
-                    Utils.toast(1, 1, getString(R.string.no_url), PDFActivity.this);
+                    textInputLayout.setError(getString(R.string.no_url));
+                    //Utils.toast(1, 1, getString(R.string.no_url), PDFActivity.this);
                 }
             } else {
                 checkPermission();

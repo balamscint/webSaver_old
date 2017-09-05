@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/textView1"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
             android:text="@string/app_name"
@@ -75,6 +75,7 @@
             android:background="@drawable/button_blue"
             android:padding="@dimen/padding_general"
             android:text="@string/create_button"
+            android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -84,9 +85,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_general"
+            android:layout_marginStart="@dimen/margin_general"
             android:background="@drawable/button_grey"
             android:text="@string/clear"
+            android:textAllCaps="false"
             android:textColor="#ffffff" />
+
+        <ImageButton
+            android:id="@+id/imageButtonNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_general"
+            android:layout_marginStart="@dimen/margin_general"
+            android:background="@drawable/ic_inbox_black_48dp"
+            android:onClick="onClick" />
 
     </LinearLayout>
 

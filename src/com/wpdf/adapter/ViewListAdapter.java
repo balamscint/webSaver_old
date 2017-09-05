@@ -110,16 +110,15 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
 
                 }
             });
+
+            //ViewHolder holder = (ViewHolder) convertView.getTag();
+            viewHolder.textViewName.setText(list.get(position).getStrFileName());
+            viewHolder.textViewTime.setText(list.get(position).getStrFileModifiedTime());
+            viewHolder.textViewSize.setText(list.get(position).getStrFileSize());
+
+            viewHolder.textViewName.setTextColor(Color.DKGRAY);
+            viewHolder.textViewTime.setTextColor(Color.BLUE);
         }
-
-
-        ViewHolder holder = (ViewHolder) convertView.getTag();
-        holder.textViewName.setText(list.get(position).getStrFileName());
-        holder.textViewTime.setText(list.get(position).getStrFileModifiedTime());
-        holder.textViewSize.setText(list.get(position).getStrFileSize());
-
-        holder.textViewName.setTextColor(Color.DKGRAY);
-        holder.textViewTime.setTextColor(Color.BLUE);
 
         return convertView;
     }
