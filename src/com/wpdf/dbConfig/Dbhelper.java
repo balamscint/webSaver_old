@@ -9,14 +9,13 @@ public class Dbhelper extends SQLiteOpenHelper {
     public static final String PDF_LIST = "pdf_list";
     public static final String SYS = "sys";
     public static final String NOTIFICATIONS = "notifications";
-
+    public static final String SYS_ID = "sysId";
     private static final String DATABASE_NAME = "websaver";
     private static final int DATABASE_VERSION = 3;
     private static final String TABLE_CREATE_PDF = "create table " + PDF_LIST
             + " (pdfId integer primary key autoincrement,path text not null);";
-
     private static final String TABLE_CREATE_SYS = "create table " + SYS
-            + " (sysId integer primary key " +
+            + " (" + SYS_ID + " integer primary key " +
             "autoincrement,uuid text not null,account text not null);";
 
     private static final String TABLE_CREATE_NOTIFICATIONS = "create table " + NOTIFICATIONS

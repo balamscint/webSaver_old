@@ -53,7 +53,7 @@ public class SplashActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_splash);
 
-        //sthis.getActionBar().hide();
+        //this.getActionBar().hide();
 
         db = new Dbcon(this);
         mAuth = FirebaseAuth.getInstance();
@@ -72,6 +72,22 @@ public class SplashActivity extends AppCompatActivity implements
             findViewById(R.id.buttonSkip).setOnClickListener(this);
         }
 
+        /*TextView textViewAppName = findViewById(R.id.fullscreen_content);
+
+        if(textViewAppName!=null){
+
+        }*/
+
+        YoYo.with(Techniques.FadeIn)
+                .duration(900)
+                .repeat(1)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+
+                    }
+                })
+                .playOn(findViewById(R.id.fullscreen_content));
     }
 
     @Override
@@ -80,18 +96,8 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void goToApp() {
-
-        YoYo.with(Techniques.FadeIn)
-                .duration(900)
-                .repeat(1)
-                .onEnd(new YoYo.AnimatorCallback() {
-                    @Override
-                    public void call(Animator animator) {
-                        startActivity(new Intent(SplashActivity.this, PDFActivity.class));
-                        finish();
-                    }
-                })
-                .playOn(findViewById(R.id.fullscreen_content));
+        startActivity(new Intent(SplashActivity.this, PDFActivity.class));
+        finish();
     }
 
     @Override
@@ -109,10 +115,22 @@ public class SplashActivity extends AppCompatActivity implements
     private void skip() {
         buttonSkip.setEnabled(false);
         buttonSkip.setText(getString(R.string.skipped));
+
         String fieldValues[] = new String[]{"NULL", "NULL"};
-        String a[] = new String[]{"account", "uuid"};
-        long l = db.insert(fieldValues, a, "sys");
-        if (l > 0) {
+        String fieldNames[] = new String[]{"account", "uuid"};
+
+        boolean dbUpdate = false;
+
+        if (!isAuthenticated) {
+            long l = db.insert(fieldValues, fieldNames, "sys");
+            if (l > 0) {
+                dbUpdate = true;
+            }
+        } else {
+            dbUpdate = db.update(Dbhelper.SYS_ID + "=1", fieldValues, fieldNames, Dbhelper.SYS, null);
+        }
+
+        if (dbUpdate) {
             goToApp();
         } else {
             Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
@@ -187,10 +205,20 @@ public class SplashActivity extends AppCompatActivity implements
         try {
 
             String fieldValues[] = new String[]{"NULL", strAccount};
-            String a[] = new String[]{"uuid", "account"};
-            long l = db.insert(fieldValues, a, "sys");
+            String fieldNames[] = new String[]{"uuid", "account"};
 
-            if (l > 0) {
+            boolean dbUpdate = false;
+
+            if (!isAuthenticated) {
+                long l = db.insert(fieldValues, fieldNames, "sys");
+                if (l > 0) {
+                    dbUpdate = true;
+                }
+            } else {
+                dbUpdate = db.update(Dbhelper.SYS_ID + "=1", fieldValues, fieldNames, Dbhelper.SYS, null);
+            }
+
+            if (dbUpdate) {
                 goToApp();
             } else {
                 Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
@@ -214,6 +242,18 @@ public class SplashActivity extends AppCompatActivity implements
         db.close();
     }
 
+   /* @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }*/
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -225,8 +265,6 @@ public class SplashActivity extends AppCompatActivity implements
             String fieldNames[] = new String[]{"uuid", "account"};
 
             dataCursor = db.fetch(Dbhelper.SYS, fieldNames, null, null, "sysId DESC");
-
-            Utils.Log(" C ", String.valueOf(dataCursor.getCount()));
 
             if (dataCursor.getCount() <= 0) {
                 isAuthenticated = false;
@@ -247,9 +285,9 @@ public class SplashActivity extends AppCompatActivity implements
             buttonSkip.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.VISIBLE);
         } else {
-            buttonSkip.setVisibility(View.VISIBLE);
+            buttonSkip.setVisibility(View.GONE);
             signInButton.setVisibility(View.GONE);
-            //goToApp();
+            goToApp();
         }
     }
 

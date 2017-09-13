@@ -8,5 +8,6 @@
     <color name="colorRed">#e13e45</color>
     <color name="black_overlay">#66000000</color>
     <color name="colorLightGrey">#c0c0c0</color>
+    <color name="colorHeader">#50a7e6</color>
     <color name="colorGrey">#d8d8d8</color>
 </resources>
