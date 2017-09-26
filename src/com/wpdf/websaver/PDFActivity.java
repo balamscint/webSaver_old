@@ -246,7 +246,7 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
                         }
 
                         if (!Utils.isConnectingToInternet(this)) {
-                            Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
+                            Utils.toast(3, 2, getString(R.string.no_internet), PDFActivity.this);
                         }
 
                         // Check if Internet present
@@ -267,10 +267,10 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
 
                             downloadPDF.execute();
                         } else {
-                            Utils.toast(1, 1, getString(R.string.no_internet), PDFActivity.this);
+                            Utils.toast(3, 2, getString(R.string.no_internet), PDFActivity.this);
                         }
                     } else {
-                        Utils.toast(1, 1, getString(R.string.invalid_url), PDFActivity.this);
+                        Utils.toast(3, 2, getString(R.string.invalid_url), PDFActivity.this);
                     }
                 } else {
                     textInputLayout.setError(getString(R.string.no_url));
@@ -280,7 +280,7 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
                 checkPermission();
             }
         } catch (Exception e) {
-            Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
+            Utils.toast(3, 3, getString(R.string.unknown_error), PDFActivity.this);
         }
     }
 
@@ -375,7 +375,7 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
 
             try {
 
-                String fieldValues[] = new String[]{uuid, "ULL"};
+                String fieldValues[] = new String[]{uuid, "NULL"};
                 String a[] = new String[]{"uuid", "account"};
                 long l = db.insert(fieldValues, a, "sys");
 
@@ -505,9 +505,9 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
                 myIntent.setDataAndType(Uri.fromFile(file), mimetype);
                 startActivity(myIntent);*/
 
-                Utils.toast(1, 1, getString(R.string.file_name) + fileName, PDFActivity.this);
+                Utils.toast(3, 2, getString(R.string.file_name) + fileName, PDFActivity.this);
             } else {
-                Utils.toast(1, 1, getString(R.string.unknown_error), PDFActivity.this);
+                Utils.toast(3, 2, getString(R.string.unknown_error), PDFActivity.this);
             }
         }
 

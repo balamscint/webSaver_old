@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -46,6 +47,14 @@ public class SplashActivity extends AppCompatActivity implements
     private TextView textViewUserName;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgress;
+    private Handler mHandler = new Handler();
+
+    private Runnable mGoToApp = new Runnable() {
+        public void run() {
+            startActivity(new Intent(SplashActivity.this, PDFActivity.class));
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +101,13 @@ public class SplashActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Utils.toast(1, 1, connectionResult.getErrorMessage(), SplashActivity.this);
+        Utils.toast(3, 2, connectionResult.getErrorMessage(), SplashActivity.this);
     }
 
     private void goToApp() {
-        startActivity(new Intent(SplashActivity.this, PDFActivity.class));
-        finish();
+        mHandler.postDelayed(mGoToApp, 1500);
+        /*startActivity(new Intent(SplashActivity.this, PDFActivity.class));
+        finish();*/
     }
 
     @Override
@@ -133,14 +143,14 @@ public class SplashActivity extends AppCompatActivity implements
         if (dbUpdate) {
             goToApp();
         } else {
-            Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
+            Utils.toast(3, 2, getString(R.string.databse_error), SplashActivity.this);
         }
     }
 
     private void signIn() {
 
         if (!Utils.isConnectingToInternet(this)) {
-            Utils.toast(1, 1, getString(R.string.no_internet), SplashActivity.this);
+            Utils.toast(3, 2, getString(R.string.no_internet), SplashActivity.this);
         } else {
             mProgress.setMessage(getString(R.string.please_wait));
             mProgress.show();
@@ -192,10 +202,10 @@ public class SplashActivity extends AppCompatActivity implements
             if (acct != null && acct.getDisplayName() != null) {
                 firebaseAuthWithGoogle(acct);
             } else {
-                Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
+                Utils.toast(3, 2, getString(R.string.unknown_error), SplashActivity.this);
             }
         } else {
-            Utils.toast(1, 1, getString(R.string.google_sign_in), SplashActivity.this);
+            Utils.toast(3, 2, getString(R.string.google_sign_in), SplashActivity.this);
         }
     }
 
@@ -221,12 +231,12 @@ public class SplashActivity extends AppCompatActivity implements
             if (dbUpdate) {
                 goToApp();
             } else {
-                Utils.toast(1, 1, getString(R.string.databse_error), SplashActivity.this);
+                Utils.toast(3, 2, getString(R.string.databse_error), SplashActivity.this);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            Utils.toast(1, 1, getString(R.string.unknown_error), SplashActivity.this);
+            Utils.toast(3, 2, getString(R.string.unknown_error), SplashActivity.this);
         }
     }
 
@@ -320,10 +330,10 @@ public class SplashActivity extends AppCompatActivity implements
 
                                 updateAccount();
                             } else {
-                                Utils.toast(1, 1, getString(R.string.firebase_failed), SplashActivity.this);
+                                Utils.toast(3, 2, getString(R.string.firebase_failed), SplashActivity.this);
                             }
                         } else {
-                            Utils.toast(1, 1, getString(R.string.firebase_failed), SplashActivity.this);
+                            Utils.toast(3, 2, getString(R.string.firebase_failed), SplashActivity.this);
                         }
                     }
                 });

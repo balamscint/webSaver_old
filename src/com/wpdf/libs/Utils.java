@@ -55,6 +55,9 @@ public class Utils {
         if (type == 2)
             color = context.getResources().getColor(R.color.colorLightGrey);
 
+        if (type == 3)
+            color = context.getResources().getColor(R.color.colorRed);
+
         try {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             View layout = inflater.inflate(R.layout.custom_toast, (ViewGroup)
