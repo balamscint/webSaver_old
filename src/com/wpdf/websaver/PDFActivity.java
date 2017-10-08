@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
@@ -36,7 +37,6 @@ import com.wpdf.adapter.ViewListAdapter;
 import com.wpdf.application.WebSaverApplication;
 import com.wpdf.dbConfig.Dbcon;
 import com.wpdf.dbConfig.Dbhelper;
-import com.wpdf.libs.GenericFileProvider;
 import com.wpdf.libs.Utils;
 import com.wpdf.model.PdfModel;
 
@@ -68,6 +68,8 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
 
         setContentView(R.layout.activity_pdf);
 
@@ -468,10 +470,10 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
 
                     Intent intent = new Intent();
 
-                    if (Build.VERSION.SDK_INT > 24) {
+                    if (Build.VERSION.SDK_INT >= 24) {
 
                         intent.setAction(Intent.ACTION_VIEW);
-                        Uri pdfURI = GenericFileProvider.getUriForFile(PDFActivity.this, getApplicationContext().getPackageName() +
+                        Uri pdfURI = FileProvider.getUriForFile(PDFActivity.this, getApplicationContext().getPackageName() +
                                 ".provider", file);
                         /* Uri pdfURI = GenericFileProvider.getUriForFile(context, context.getApplicationContext()
                         .getPackageName

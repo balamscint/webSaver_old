@@ -4,16 +4,17 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.wpdf.libs.GenericFileProvider;
 import com.wpdf.libs.Utils;
 import com.wpdf.model.PdfModel;
 import com.wpdf.websaver.R;
@@ -130,27 +131,33 @@ public class ViewListAdapter extends ArrayAdapter<PdfModel> {
 
             Intent intent = new Intent();
 
-            if (Build.VERSION.SDK_INT > 24) {
+            if (Build.VERSION.SDK_INT >= 24) {
 
                 intent.setAction(Intent.ACTION_VIEW);
-                Uri pdfURI = GenericFileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() +
-                        ".provider", file);
-               /* Uri pdfURI = GenericFileProvider.getUriForFile(context, context.getApplicationContext()
-                        .getPackageName
-                                (), f);*/
-                intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
+                Uri pdfURI = FileProvider.getUriForFile(context, "com.wpdf.libs.GenericFileProvider", file);
+                intent.setDataAndType(pdfURI, "application/pdf");
+
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                intent.setType("application/pdf");
+
+                // intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
+                //intent.setType("application/pdf");
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Utils.Log(" IN ", " > 24 ");
             } else {
                 String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(
                         Uri.fromFile(file).toString());
                 String mimetype = android.webkit.MimeTypeMap.getSingleton().
                         getMimeTypeFromExtension(extension);
                 intent.setDataAndType(Uri.fromFile(file), mimetype);
+                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+                Utils.Log(" IN ", " < 24 ");
             }
 
-            context.startActivity(intent);
+            // validate that the device can open your File!
+            PackageManager pm = context.getPackageManager();
+            if (intent.resolveActivity(pm) != null) {
+                context.startActivity(intent);
+            }
 
         } catch (ActivityNotFoundException aNFE) {
             aNFE.printStackTrace();

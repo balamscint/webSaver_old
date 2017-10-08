@@ -54,6 +54,7 @@
                 android:gravity="center"
                 android:keepScreenOn="true"
                 android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_size"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
