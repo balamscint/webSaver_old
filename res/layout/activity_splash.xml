@@ -6,7 +6,6 @@
     tools:context="com.wpdf.websaver.SplashActivity">
 
     <!--TODO
-        2.Text Logo Size.
         3. Buttons Size
         4. UI Tweaks
         -->
@@ -48,13 +47,13 @@
 
             <TextView
                 android:id="@+id/userName"
+                style="@android:style/TextAppearance.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_general"
                 android:gravity="center"
                 android:keepScreenOn="true"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_size"
                 android:textStyle="bold"
                 android:visibility="gone" />
 

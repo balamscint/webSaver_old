@@ -14,6 +14,7 @@
 
         <TextView
             android:id="@+id/textViewIcon"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
@@ -33,12 +34,14 @@
 
         <TextView
             android:id="@+id/textViewName"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="2dp" />
 
         <TextView
             android:id="@+id/textViewSize"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -46,6 +49,7 @@
 
         <TextView
             android:id="@+id/textViewTime"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="2dp" />

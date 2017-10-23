@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.wpdf.dbConfig.Dbcon;
+import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.model.NotificationModel;
 import com.wpdf.websaver.R;
 
@@ -39,7 +41,7 @@ public class NotificationAdapter extends ArrayAdapter<NotificationModel> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         ViewHolder viewHolder;
 
@@ -67,11 +69,22 @@ public class NotificationAdapter extends ArrayAdapter<NotificationModel> {
                 e.printStackTrace();
             }
 
-            viewHolder.textViewMess.setOnClickListener(new View.OnClickListener() {
+            viewHolder.textViewMess.setOnLongClickListener(new View.OnLongClickListener() {
+                /**
+                 * Called when a view has been clicked and held.
+                 *
+                 * @param v The view that was clicked and held.
+                 * @return true if the callback consumed the long click, false otherwise.
+                 */
                 @Override
-                public void onClick(View v) {
+                public boolean onLongClick(View v) {
                     int id = (int) v.getTag();
 
+                    Dbcon db = new Dbcon(context);
+                    db.delete(Dbhelper.NOTIFICATIONS, "notification_id=" + String.valueOf(id), null);
+                    notificationModels.remove(position);
+                    notifyDataSetChanged();
+                    return true;
                 }
             });
         }

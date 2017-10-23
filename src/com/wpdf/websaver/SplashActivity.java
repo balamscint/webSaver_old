@@ -126,8 +126,8 @@ public class SplashActivity extends AppCompatActivity implements
         buttonSkip.setEnabled(false);
         buttonSkip.setText(getString(R.string.skipped));
 
-        String fieldValues[] = new String[]{"NULL", "NULL"};
-        String fieldNames[] = new String[]{"account", "uuid"};
+        String fieldValues[] = new String[]{"NULL"};
+        String fieldNames[] = new String[]{"account"};
 
         boolean dbUpdate = false;
 
@@ -214,8 +214,8 @@ public class SplashActivity extends AppCompatActivity implements
 
         try {
 
-            String fieldValues[] = new String[]{"NULL", strAccount};
-            String fieldNames[] = new String[]{"uuid", "account"};
+            String fieldValues[] = new String[]{strAccount};
+            String fieldNames[] = new String[]{"account"};
 
             boolean dbUpdate = false;
 
@@ -274,7 +274,7 @@ public class SplashActivity extends AppCompatActivity implements
 
             String fieldNames[] = new String[]{"uuid", "account"};
 
-            dataCursor = db.fetch(Dbhelper.SYS, fieldNames, null, null, "sysId DESC");
+            dataCursor = db.fetch(Dbhelper.SYS, fieldNames, Dbhelper.SYS_ID + "=1", null, Dbhelper.SYS_ID + " DESC");
 
             if (dataCursor.getCount() <= 0) {
                 isAuthenticated = false;

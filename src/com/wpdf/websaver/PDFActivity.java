@@ -377,8 +377,8 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
 
             try {
 
-                String fieldValues[] = new String[]{uuid, "NULL"};
-                String a[] = new String[]{"uuid", "account"};
+                String fieldValues[] = new String[]{uuid};
+                String a[] = new String[]{"uuid"};
                 long l = db.insert(fieldValues, a, "sys");
 
                 if (l <= 0) {

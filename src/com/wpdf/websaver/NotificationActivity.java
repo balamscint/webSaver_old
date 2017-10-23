@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.wpdf.adapter.NotificationAdapter;
+import com.wpdf.dbConfig.Dbcon;
+import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.model.NotificationModel;
 import com.wpdf.services.FirebaseNotificationService;
 
@@ -36,6 +38,8 @@ public class NotificationActivity extends AppCompatActivity {
     public NotificationAdapter notificationAdapter;
     public ListView listViewNotifications;
 
+    private Dbcon db = null;
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -49,6 +53,7 @@ public class NotificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
 
+        db = new Dbcon(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
@@ -89,51 +94,21 @@ public class NotificationActivity extends AppCompatActivity {
     private ArrayList<NotificationModel> getNotifications() {
 
         ArrayList<NotificationModel> notificationModels = new ArrayList<>();
-        Cursor cursor = null;
+        Cursor dataCursor = null;
         try {
 
-           /* String strDocument;
-            int iNew;
-            String strDocId;
+            String fieldNames[] = new String[]{"message", "read", "notification_id"};
 
-            // +  " AND updated_date = '"+currentDate+"'"
-            // select * from collections  where  collection_name = 'notification' and updated_date >= date('now','-15 day') and updated_date <= date('now') and updated_date like '2017-01-11%'
-            cursor = fetch(
-                    DbHelper.strTableNameCollection, new String[]{DbHelper.COLUMN_OBJECT_ID, DbHelper.COLUMN_DOCUMENT
-                            , DbHelper.COLUMN_NEW_UPDATED},
-                    DbHelper.COLUMN_COLLECTION_NAME + "=? AND updated_date >= date('now','-15 day') and updated_date <= date('now')" +
-                            " OR updated_date like '" + currentDate + "%'",
-                    new String[]{Config.collectionNotification}, DbHelper.COLUMN_UPDATE_DATE
-                            + " desc", null, true, null, null);
+            dataCursor = db.fetch(Dbhelper.NOTIFICATIONS, fieldNames, null, null, "notification_id DESC");
 
-            if (cursor != null && cursor.getCount() > 0) {
-                Config.notificationModels.clear();
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    strDocId = cursor.getString(0);
-                    strDocument = cursor.getString(1);
-                    iNew = cursor.getInt(2);
+            if (dataCursor.getCount() > 0) {
 
+                while (!dataCursor.isAfterLast()) {
 
-                    JSONObject jsonObjectProvider = new JSONObject(strDocument);
-
-                    if (jsonObjectProvider.has(App42GCMService.ExtraMessage)) {*/
-            notificationModels.add(new NotificationModel("TEST", 1, 1));
-
-                   /* }
-                    cursor.moveToNext();
+                    notificationModels.add(new NotificationModel(dataCursor.getString(0), dataCursor.getInt(1), dataCursor.getInt(2)));
+                    dataCursor.moveToNext();
                 }
             }
-            CareGiver.getDbCon().closeCursor(cursor);
-
-            //
-            CareGiver.getDbCon().update(
-                    DbHelper.strTableNameCollection,
-                    DbHelper.COLUMN_COLLECTION_NAME + "=?",
-                    new String[]{"0"},
-                    new String[]{DbHelper.COLUMN_NEW_UPDATED},
-                    new String[]{Config.collectionNotification});*/
-            //
 
         } catch (Exception e) {
             e.printStackTrace();

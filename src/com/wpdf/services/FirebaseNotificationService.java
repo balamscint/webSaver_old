@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.wpdf.dbConfig.Dbcon;
+import com.wpdf.dbConfig.Dbhelper;
 import com.wpdf.libs.Utils;
 import com.wpdf.websaver.NotificationActivity;
 import com.wpdf.websaver.R;
@@ -110,6 +112,17 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         notificationManager.notify(0 *//* ID of notification *//*, notificationBuilder.build());*/
 
         //
+
+        Dbcon db = new Dbcon(this);
+
+        String fieldValues[] = new String[]{messageBody, "0"};
+        String fieldNames[] = new String[]{"message", "read"};
+
+        try {
+            db.insert(fieldValues, fieldNames, Dbhelper.NOTIFICATIONS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         long when = System.currentTimeMillis();
 

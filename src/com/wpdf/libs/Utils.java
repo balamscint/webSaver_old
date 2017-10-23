@@ -107,8 +107,6 @@ public class Utils {
         String state = Environment.getExternalStorageState();
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-
-
             // We can read and write the media
             mExternalStorageAvailable = true;
         } else { // We can only read the media

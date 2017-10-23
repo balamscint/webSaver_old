@@ -16,7 +16,7 @@ public class Dbhelper extends SQLiteOpenHelper {
             + " (pdfId integer primary key autoincrement,path text not null);";
     private static final String TABLE_CREATE_SYS = "create table " + SYS
             + " (" + SYS_ID + " integer primary key " +
-            "autoincrement,uuid text not null,account text not null);";
+            "autoincrement,uuid text,account text);";
 
     private static final String TABLE_CREATE_NOTIFICATIONS = "create table " + NOTIFICATIONS
             + " (notification_id integer primary key autoincrement, " +

@@ -1,6 +1,5 @@
 <resources>
     <dimen name="padding_general">12.0dp</dimen>
     <dimen name="margin_general">12.0dp</dimen>
-    <dimen name="text_size">43.2sp</dimen>
     <dimen name="text_size_banner">57sp</dimen>
 </resources>

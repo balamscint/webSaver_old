@@ -13,6 +13,7 @@
 
         <TextView
             android:id="@+id/textViewIcon"
+            style="@android:style/TextAppearance.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_general"
@@ -21,17 +22,16 @@
             android:padding="@dimen/padding_general"
             android:text="@string/app_logo"
             android:textColor="@color/colorWhite"
-            android:textSize="@dimen/text_bigger_title"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView1"
+            style="@android:style/TextAppearance.Large"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
             android:text="@string/app_name"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/text_bigger_title"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -46,6 +46,7 @@
 
     <TextView
         android:id="@android:id/empty"
+        style="@android:style/TextAppearance.Medium"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
