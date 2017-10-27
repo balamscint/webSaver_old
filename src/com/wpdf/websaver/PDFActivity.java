@@ -448,6 +448,8 @@ public class PDFActivity extends AppCompatActivity implements View.OnClickListen
                 why.printStackTrace();
             } catch (IOException exc) {
                 exc.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             return isSuccess;

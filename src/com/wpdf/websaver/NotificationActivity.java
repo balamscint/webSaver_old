@@ -10,8 +10,12 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ListView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.wpdf.adapter.NotificationAdapter;
@@ -36,7 +40,8 @@ public class NotificationActivity extends AppCompatActivity {
         }
     };
     public NotificationAdapter notificationAdapter;
-    public ListView listViewNotifications;
+    public RecyclerView listViewNotifications;
+    private TextView emptyTextView;
 
     private Dbcon db = null;
 
@@ -46,6 +51,16 @@ public class NotificationActivity extends AppCompatActivity {
 
         startActivity(new Intent(NotificationActivity.this, PDFActivity.class));
         finish();
+    }
+
+    private void emptyRecyclerView(int count) {
+        if (count <= 0) {
+            listViewNotifications.setVisibility(View.GONE);
+            emptyTextView.setVisibility(View.VISIBLE);
+        } else {
+            listViewNotifications.setVisibility(View.VISIBLE);
+            emptyTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -82,12 +97,28 @@ public class NotificationActivity extends AppCompatActivity {
         }
 
         listViewNotifications = findViewById(R.id.listViewNotification);
-        TextView emptyTextView = findViewById(android.R.id.empty);
-        listViewNotifications.setEmptyView(emptyTextView);
+        emptyTextView = findViewById(android.R.id.empty);
+        //listViewNotifications.setE(emptyTextView);
+
+        listViewNotifications.addItemDecoration(new DividerItemDecoration(NotificationActivity.this,
+                LinearLayoutManager.VERTICAL));
+        listViewNotifications.setHasFixedSize(true);
+
+        ArrayList<NotificationModel> notificationModels = getNotifications();
 
         notificationAdapter = new
-                NotificationAdapter(NotificationActivity.this, getNotifications());
+                NotificationAdapter(NotificationActivity.this, notificationModels);
+        //listViewNotifications.setAdapter(notificationAdapter);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(NotificationActivity.this);
+        listViewNotifications.setLayoutManager(mLayoutManager);
+        listViewNotifications.setItemAnimator(new DefaultItemAnimator());
+
+        //
         listViewNotifications.setAdapter(notificationAdapter);
+        //
+
+        emptyRecyclerView(notificationModels.size());
     }
 
 
