@@ -7,7 +7,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0-alpha11'
+        classpath 'com.android.tools.build:gradle:3.2.0-alpha12'
         classpath 'com.google.gms:google-services:3.2.0'
         classpath 'io.fabric.tools:gradle:1.+'
     }
@@ -23,7 +23,7 @@ dependencies {
     /*implementation 'com.android.support:support-v4:26.0.1'*/
     implementation 'com.google.firebase:firebase-invites:15.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     /*compile 'com.google.android.gms:play-services-gcm:11.0.4'*/
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
     implementation 'com.google.firebase:firebase-auth:15.0.0'
